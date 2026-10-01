@@ -187,6 +187,35 @@ document.querySelector('#checkoutButton').addEventListener('click', () => {
 });
 document.querySelector('#closeDialog').addEventListener('click', () => checkoutDialog.close());
 checkoutDialog.addEventListener('close', () => openCartButton.focus());
+function buildOrderSummary(data) {
+  const cartItemsList = [...cart.values()];
+  const items = cartItemsList.map(item => `${item.quantity} × ${item.name}${item.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n');
+  const total = cartItemsList.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const shippingLabel = shipping === 0 ? 'Gratis' : money.format(shipping);
+  const addressLine2 = String(data.get('addressLine2') || '').trim();
+  const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
+  const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
+  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}\n\nQuedo atento a la confirmación de stock, horario de entrega y envío del enlace de pago de Transbank Webpay.`;
+}
+
+// Botón "Enviar pedido por WhatsApp": valida los datos y abre WhatsApp con el cliente y el pedido completos.
+const whatsappOrderButton = checkoutForm.querySelector('.whatsapp-button');
+whatsappOrderButton?.addEventListener('click', () => {
+  if (!cart.size) {
+    formStatus.textContent = 'Tu pedido está vacío. Agrega al menos un producto antes de enviarlo.';
+    return;
+  }
+  if (!checkoutForm.reportValidity()) {
+    formStatus.textContent = 'Completa tus datos para enviar el pedido por WhatsApp.';
+    return;
+  }
+  const summary = buildOrderSummary(new FormData(checkoutForm));
+  const waWindow = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`, '_blank');
+  if (waWindow) waWindow.opener = null;
+  else window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`);
+  formStatus.textContent = 'Abrimos WhatsApp con tu pedido. Solo falta presionar Enviar en WhatsApp.';
+});
 checkoutForm.addEventListener('submit', async event => {
   event.preventDefault();
   if (!cart.size) {
@@ -204,7 +233,7 @@ checkoutForm.addEventListener('submit', async event => {
   const addressLine2 = String(data.get('addressLine2') || '').trim();
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
   const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
-  const summary = `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}\n\nQuedo atento a la confirmación de stock, horario de entrega y envío del enlace de pago de Transbank Webpay.`;
+  const summary = buildOrderSummary(data);
   submitButton.disabled = true;
   submitButton.textContent = 'Enviando…';
   formStatus.textContent = 'Registrando tu solicitud de forma segura…';

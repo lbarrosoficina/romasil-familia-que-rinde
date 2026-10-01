@@ -76,7 +76,7 @@
 <form id="checkoutForm" name="pedido-romasil" method="POST">
 <p class="honeypot" aria-hidden="true" inert><label>No completar este campo<input name="_honey" tabindex="-1" autocomplete="off"></label></p>
 <button class="icon-button dialog-close" type="button" id="closeDialog" aria-label="Cerrar">×</button>
-<p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Datos para confirmar</h2><p class="dialog-copy">Registraremos tu solicitud y abriremos WhatsApp para que confirmes el envío.</p>
+<p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Datos para confirmar</h2><p class="dialog-copy">Completa tus datos y envíanos el pedido por correo y WhatsApp, o directo por WhatsApp. Te confirmaremos stock, total y horario.</p>
 <label>Nombre<input name="name" autocomplete="name" required placeholder="Tu nombre"></label>
 <label>Teléfono<input name="phone" autocomplete="tel" inputmode="tel" required placeholder="+56 9 1234 5678"></label>
 <label>Correo electrónico<input type="email" name="email" autocomplete="email" required placeholder="tu@correo.cl"></label>
@@ -87,7 +87,7 @@
 <label>Comuna<select name="commune" autocomplete="address-level2" required><option value="" selected disabled>Selecciona una comuna</option><option>Providencia</option><option>Ñuñoa</option><option>Las Condes</option></select></label>
 <label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar la solicitud, notificarla por correo y continuar el envío mediante WhatsApp.</span></label>
 <button class="button primary full" type="submit">Enviar solicitud</button>
-<a class="button whatsapp-button full" href="https://wa.me/56962319733?text=Hola%2C%20quiero%20consultar%20por%20un%20pedido%20de%20Congelados%20Romasil." target="_blank" rel="noopener">Continuar directamente por WhatsApp</a>
+<button class="button whatsapp-button full" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5 5.3 15A8 8 0 1 1 9 18.7z"/><path d="M9 10.5c.5 2 2 3.5 4 4"/></svg> Enviar pedido por WhatsApp</button>
 <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
 <p class="form-note">No se realizará ningún cobro ni se confirmará una compra en esta etapa.</p>
 </form>
