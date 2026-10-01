@@ -195,8 +195,7 @@ function buildOrderSummary(data) {
   const shippingLabel = shipping === 0 ? 'Gratis' : money.format(shipping);
   const addressLine2 = String(data.get('addressLine2') || '').trim();
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
-  const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
-  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}\n\nQuedo atento a la confirmación de stock, horario de entrega y envío del enlace de pago de Transbank Webpay.`;
+  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}`;
 }
 
 // Botón "Enviar pedido por WhatsApp": valida los datos y abre WhatsApp con el cliente y el pedido completos.
@@ -215,6 +214,11 @@ whatsappOrderButton?.addEventListener('click', () => {
   if (waWindow) waWindow.opener = null;
   else window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`);
   formStatus.textContent = 'Abrimos WhatsApp con tu pedido. Solo falta presionar Enviar en WhatsApp.';
+});
+
+// Cerrar el formulario al hacer clic en la zona oscura alrededor.
+checkoutDialog.addEventListener('click', event => {
+  if (event.target === checkoutDialog) checkoutDialog.close();
 });
 checkoutForm.addEventListener('submit', async event => {
   event.preventDefault();
