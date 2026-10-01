@@ -2,7 +2,7 @@ const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP
 const CART_STORAGE_KEY = 'romasil-session-cart';
 // Mantener esta lista alineada con los productos data-available="true" del catálogo.
 // Así, los productos ocultos permanecen en el HTML para una futura reactivación, pero no se pueden pedir por un carrito antiguo.
-const AVAILABLE_PRODUCT_IDS = new Set(['atun-steak', 'salmon-nacional', 'camaron-ecuatoriano', 'chorito', 'ostion-media-concha', 'ostion-sin-coral']);
+const AVAILABLE_PRODUCT_IDS = new Set(['filetillo-pollo', 'pechuga-pollo', 'trutro-largo-pollo', 'malaya-cerdo', 'salmon-nacional', 'camaron-ecuatoriano', 'camaron-sin-cascara', 'ostion-media-concha', 'ostion-sin-coral', 'machas-media-concha']);
 let storedCart = [];
 try {
   const parsedCart = JSON.parse(sessionStorage.getItem(CART_STORAGE_KEY) || '[]');
@@ -156,7 +156,7 @@ document.querySelectorAll('.filter').forEach(button => button.addEventListener('
   button.setAttribute('aria-pressed', 'true');
   const filter = button.dataset.filter;
   let visibleProducts = 0;
-  document.querySelectorAll('.product-card').forEach(card => {
+  document.querySelectorAll('#productGrid .product-card').forEach(card => {
     const isAvailable = card.dataset.available === 'true';
     card.hidden = !isAvailable || (filter !== 'todos' && card.dataset.category !== filter);
     if (!card.hidden) visibleProducts += 1;
