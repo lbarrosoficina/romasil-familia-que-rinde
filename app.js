@@ -2,7 +2,7 @@ const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP
 const CART_STORAGE_KEY = 'romasil-session-cart';
 // Mantener esta lista alineada con los productos data-available="true" del catálogo.
 // Así, los productos ocultos permanecen en el HTML para una futura reactivación, pero no se pueden pedir por un carrito antiguo.
-const AVAILABLE_PRODUCT_IDS = new Set(['filetillo-pollo', 'pechuga-pollo', 'trutro-largo-pollo', 'malaya-cerdo', 'salmon-nacional', 'camaron-ecuatoriano', 'camaron-sin-cascara', 'ostion-media-concha', 'ostion-sin-coral', 'machas-media-concha']);
+const AVAILABLE_PRODUCT_IDS = new Set(['filetillo-pollo', 'trutro-largo-pollo', 'malaya-cerdo', 'salmon-nacional', 'camaron-ecuatoriano', 'camaron-sin-cascara', 'ostion-media-concha', 'ostion-sin-coral', 'machas-media-concha']);
 let storedCart = [];
 try {
   const parsedCart = JSON.parse(sessionStorage.getItem(CART_STORAGE_KEY) || '[]');
