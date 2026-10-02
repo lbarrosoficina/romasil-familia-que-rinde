@@ -53,6 +53,60 @@
     "email": "ventas@congeladosromasil.cl",
     "contactType": "sales",
     "availableLanguage": "Spanish"
+  },
+  "hasShippingService": {
+    "@type": "ShippingService",
+    "@id": "https://congeladosromasil.cl/#shipping",
+    "name": "Despacho de Congelados Romasil",
+    "description": "Despacho en Providencia, Ñuñoa y Las Condes por $3.500, gratis desde $50.000 en productos. Entrega referencial en 24 a 48 horas, sujeta a disponibilidad y coordinación previa.",
+    "fulfillmentType": "FulfillmentTypeDelivery",
+    "shippingConditions": [
+      {
+        "@type": "ShippingConditions",
+        "orderValue": {
+          "@type": "MonetaryAmount",
+          "minValue": 0,
+          "maxValue": 49999,
+          "currency": "CLP"
+        },
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": 3500,
+          "currency": "CLP"
+        },
+        "transitTime": {
+          "@type": "ServicePeriod",
+          "duration": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 2,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      {
+        "@type": "ShippingConditions",
+        "orderValue": {
+          "@type": "MonetaryAmount",
+          "minValue": 50000,
+          "currency": "CLP"
+        },
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": 0,
+          "currency": "CLP"
+        },
+        "transitTime": {
+          "@type": "ServicePeriod",
+          "duration": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 2,
+            "unitCode": "DAY"
+          }
+        }
+      }
+    ]
   }
 }
 </script>
