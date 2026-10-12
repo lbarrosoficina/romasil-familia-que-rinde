@@ -136,6 +136,18 @@ a.filter{display:inline-flex;align-items:center;text-decoration:none}
 .category-more{margin-top:24px}
 .category-links{margin-top:14px;font-size:16px}
 .category-links a{color:var(--navy);font-weight:700}
+.product-info h3 a{color:inherit;text-decoration:none}
+.product-info h3 a:hover,.occasion .product-info p a:hover{text-decoration:underline}
+.occasion .product-info p a{color:inherit;text-decoration:none}
+.product-card.product-detail{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;padding:24px}
+.product-detail h1{font-size:clamp(32px,4.2vw,52px);font-weight:900;margin:6px 0 12px;line-height:1.05}
+.product-lead{font-size:18px;color:var(--muted)}
+.product-specs{display:grid;gap:8px;margin:20px 0 4px;padding:0;list-style:none;font-size:15px;color:var(--muted)}
+.product-specs strong{color:var(--ink)}
+.product-detail .product-footer{justify-content:flex-start;gap:20px;padding-top:20px;margin-top:0}
+.product-detail .product-footer strong{font-size:34px}
+.product-note{font-size:14px;color:var(--muted);margin-top:12px}
+@media (max-width:720px){.product-card.product-detail{grid-template-columns:1fr;gap:18px;padding:14px}}
 .legal{margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);font-size:14px}
 
 /* Carrito */
