@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Congelados Romasil</title>
+    <link>https://congeladosromasil.cl/</link>
+    <description>Pollo, cerdo, pescados y mariscos congelados con despacho en Providencia, Ñuñoa y Las Condes.</description>
+    <item>
+      <g:id>filetillo-pollo</g:id>
+      <g:title>Filetillo de pollo congelado</g:title>
+      <g:description>Tiras de pechuga de pollo congeladas, prácticas para sartén, horno o air fryer. Se cocinan en minutos y resuelven almuerzos y cenas de toda la semana.</g:description>
+      <g:link>https://congeladosromasil.cl/filetillo-de-pollo-congelado.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/pollo-filetillo-700g.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>5700 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
+      <g:product_type>Pollo</g:product_type>
+    </item>
+    <item>
+      <g:id>pechuga-pollo</g:id>
+      <g:title>Pechuga deshuesada de pollo</g:title>
+      <g:description>Pechuga de pollo deshuesada y laminada, fácil de porcionar. Una base versátil para la plancha, el horno o preparaciones en trozos.</g:description>
+      <g:link>https://congeladosromasil.cl/pechuga-de-pollo-deshuesada.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/pollo-pechuga-750g.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>5300 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
+      <g:product_type>Pollo</g:product_type>
+    </item>
+    <item>
+      <g:id>trutro-largo-pollo</g:id>
+      <g:title>Trutro largo de pollo congelado</g:title>
+      <g:description>Trutros largos de pollo, el corte más jugoso para el horno, la olla o la parrilla. Ideales para asados familiares y cocciones lentas.</g:description>
+      <g:link>https://congeladosromasil.cl/trutro-largo-de-pollo.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/pollo-trutro-largo.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>3300 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
+      <g:product_type>Pollo</g:product_type>
+    </item>
+    <item>
+      <g:id>malaya-cerdo</g:id>
+      <g:title>Malaya de cerdo</g:title>
+      <g:description>Malaya de cerdo envasada de aproximadamente 900 g. Un corte delgado y sabroso, ideal para un asado, un arrollado casero o una cena al horno.</g:description>
+      <g:link>https://congeladosromasil.cl/malaya-de-cerdo.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/cerdo-malaya-900g.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>13000 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
+      <g:product_type>Cerdo</g:product_type>
+    </item>
+    <item>
+      <g:id>salmon-nacional</g:id>
+      <g:title>Salmón nacional filete</g:title>
+      <g:description>Filete de salmón nacional con piel, sellado al vacío en porciones de 500 g. Para una cena rápida y rica al horno, a la plancha o en papillote.</g:description>
+      <g:link>https://congeladosromasil.cl/filete-de-salmon-congelado.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/product-salmon-v1.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>7950 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Pescados</g:product_type>
+    </item>
+    <item>
+      <g:id>camaron-ecuatoriano</g:id>
+      <g:title>Camarón ecuatoriano con cáscara 36/40</g:title>
+      <g:description>Camarón ecuatoriano crudo, con cáscara y sin cabeza, calibre 36/40. La cáscara protege la carne y aporta sabor: ideal para camarones al ajillo o a la parrilla.</g:description>
+      <g:link>https://congeladosromasil.cl/camaron-con-cascara-36-40.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/camaron-con-cascara-sin-cabeza.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>10350 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Camarones</g:product_type>
+    </item>
+    <item>
+      <g:id>camaron-sin-cascara</g:id>
+      <g:title>Camarón ecuatoriano sin cáscara 36/40</g:title>
+      <g:description>Camarón ecuatoriano crudo sin cáscara, calibre 36/40, listo para usar sin trabajo extra. Perfecto para pastas, arroces, salteados y tacos.</g:description>
+      <g:link>https://congeladosromasil.cl/camaron-sin-cascara-36-40.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/product-camaron-v1.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>11600 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Camarones</g:product_type>
+    </item>
+    <item>
+      <g:id>ostion-media-concha</g:id>
+      <g:title>Ostión con coral en media concha</g:title>
+      <g:description>Bandeja de aproximadamente 250 g con 10 ostiones con coral en su media concha. El clásico para una entrada especial a la parmesana o al horno.</g:description>
+      <g:link>https://congeladosromasil.cl/ostiones-media-concha.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/product-ostion-media-concha-v1.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>6900 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Mariscos</g:product_type>
+    </item>
+    <item>
+      <g:id>ostion-sin-coral</g:id>
+      <g:title>Ostión sin coral 20/40</g:title>
+      <g:description>Carne de ostión limpia, sin coral, calibre 20/40, en bolsa de 1 kg. Lista para saltear, gratinar o incorporar a pastas y arroces.</g:description>
+      <g:link>https://congeladosromasil.cl/ostion-sin-coral-20-40.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/product-ostion-sin-coral-v1.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>11900 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Mariscos</g:product_type>
+    </item>
+    <item>
+      <g:id>machas-media-concha</g:id>
+      <g:title>Machas en media concha grandes</g:title>
+      <g:description>Bandeja de 12 machas grandes en su media concha, listas para preparar a la parmesana o gratinar. Una entrada clásica para compartir.</g:description>
+      <g:link>https://congeladosromasil.cl/machas-media-concha.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/machas-media-concha.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>7900 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Mariscos</g:product_type>
+    </item>
+  </channel>
+</rss>
