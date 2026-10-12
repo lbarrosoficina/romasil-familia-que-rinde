@@ -119,13 +119,15 @@ details p{padding:0 0 18px;color:var(--muted)}
 
 /* Pie */
 .site-footer{background:var(--footer-bg);color:var(--footer-ink);padding:56px 0 36px;font-size:15px}
-.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
 .footer-brand{display:inline-flex;background:#fff;border-radius:16px;padding:8px 12px;margin-bottom:16px}
 .footer-brand img{height:44px;width:auto}
 .site-footer h3{font-family:var(--font-body);font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:12px}
 .footer-links{display:flex;flex-direction:column;gap:8px}
 .footer-links a{text-decoration:none}
 .footer-links a:hover{text-decoration:underline}
+.footer-links.social a{display:inline-flex;align-items:center;gap:10px}
+.footer-links.social .icon{width:20px;height:20px;flex:none}
 .legal{margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);font-size:14px}
 
 /* Carrito */
