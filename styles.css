@@ -128,6 +128,14 @@ details p{padding:0 0 18px;color:var(--muted)}
 .footer-links a:hover{text-decoration:underline}
 .footer-links.social a{display:inline-flex;align-items:center;gap:10px}
 .footer-links.social .icon{width:20px;height:20px;flex:none}
+a.filter{display:inline-flex;align-items:center;text-decoration:none}
+.category-tips ul{display:grid;gap:14px;margin-top:20px;padding:0;list-style:none}
+.category-tips li{position:relative;padding-left:24px;color:var(--muted)}
+.category-tips li::before{content:"";position:absolute;left:0;top:.6em;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.category-tips li strong{color:var(--ink)}
+.category-more{margin-top:24px}
+.category-links{margin-top:14px;font-size:16px}
+.category-links a{color:var(--navy);font-weight:700}
 .legal{margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);font-size:14px}
 
 /* Carrito */
