@@ -157,8 +157,8 @@ document.querySelectorAll('.filter').forEach(button => button.addEventListener('
   const filter = button.dataset.filter;
   let visibleProducts = 0;
   document.querySelectorAll('#productGrid .product-card').forEach(card => {
-    const isAvailable = card.dataset.available === 'true';
-    card.hidden = !isAvailable || (filter !== 'todos' && card.dataset.category !== filter);
+    const isListed = card.dataset.available === 'true' || card.dataset.available === 'soon';
+    card.hidden = !isListed || (filter !== 'todos' && card.dataset.category !== filter);
     if (!card.hidden) visibleProducts += 1;
   });
   const emptyState = document.querySelector('#filterEmpty');

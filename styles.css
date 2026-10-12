@@ -76,6 +76,7 @@ button{font:inherit;cursor:pointer}
 .product-footer strong{font-family:var(--font-display);font-size:26px;font-weight:900;color:var(--ink)}
 .add-button{min-height:46px;padding:10px 20px;border:0;border-radius:var(--pill);background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:15px}
 .add-button:hover{filter:brightness(1.05)}
+.soon-badge{display:inline-flex;align-items:center;min-height:46px;padding:10px 20px;border-radius:var(--pill);background:var(--cream-2);color:var(--orange-text);font-weight:800;font-size:15px;margin-left:auto}
 
 /* Pasos */
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
