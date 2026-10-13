@@ -183,6 +183,7 @@ dialog::backdrop{background:rgba(15,20,40,.55)}
 #checkoutForm label span{font-weight:400;color:var(--muted)}
 #checkoutForm input:not([type=checkbox]),#checkoutForm select{font:inherit;min-height:50px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink)}
 #checkoutForm input:focus,#checkoutForm select:focus{border-color:var(--navy);outline:none}
+#checkoutForm input:focus-visible,#checkoutForm select:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .address-fields{border:0;padding:0;margin:0;display:grid;gap:12px}
 .address-fields legend{font-weight:800;margin-bottom:6px}
 #checkoutForm .consent{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:14px}
