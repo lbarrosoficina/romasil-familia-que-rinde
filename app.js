@@ -1,3 +1,64 @@
+// Google Analytics 4: solo se carga si la persona acepta la analítica en el aviso de cookies (ver politica-de-privacidad.html#cookies).
+// track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
+const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
+const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
+let analyticsEnabled = false;
+function readConsent() {
+  try { return localStorage.getItem(CONSENT_STORAGE_KEY); } catch { return null; }
+}
+function saveConsent(value) {
+  try { localStorage.setItem(CONSENT_STORAGE_KEY, value); } catch { /* sin almacenamiento: se volverá a preguntar */ }
+}
+function enableAnalytics() {
+  if (analyticsEnabled) return;
+  analyticsEnabled = true;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID);
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  document.head.appendChild(script);
+}
+function track(eventName, params = {}) {
+  if (analyticsEnabled && typeof window.gtag === 'function') window.gtag('event', eventName, params);
+}
+function showConsentBanner() {
+  if (document.querySelector('#consentBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'consentBanner';
+  banner.className = 'consent-banner';
+  banner.setAttribute('role', 'region');
+  banner.setAttribute('aria-label', 'Preferencias de cookies');
+  banner.innerHTML = '<p>Usamos Google Analytics para saber cómo se usa la web y mejorarla. Solo se activa si lo aceptas. <a href="politica-de-privacidad.html#cookies">Más información</a></p><div class="consent-actions"><button type="button" class="button secondary" data-consent="denied">Rechazar</button><button type="button" class="button primary" data-consent="granted">Aceptar</button></div>';
+  banner.addEventListener('click', event => {
+    const choice = event.target.closest('[data-consent]')?.dataset.consent;
+    if (!choice) return;
+    saveConsent(choice);
+    banner.remove();
+    if (choice === 'granted') enableAnalytics();
+    else if (analyticsEnabled) {
+      // Retiro del consentimiento: borrar las cookies de Analytics (_ga, _ga_*) y recargar sin la etiqueta.
+      document.cookie.split(';').map(c => c.split('=')[0].trim()).filter(name => name.startsWith('_ga')).forEach(name => {
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=.${location.hostname.replace(/^www\./, '')}`;
+        document.cookie = `${name}=; Max-Age=0; path=/`;
+      });
+      window.location.reload();
+    }
+  });
+  document.body.appendChild(banner);
+}
+const storedConsent = readConsent();
+if (storedConsent === 'granted') enableAnalytics();
+else if (storedConsent !== 'denied') showConsentBanner();
+document.querySelectorAll('[data-cookie-settings]').forEach(button => button.addEventListener('click', showConsentBanner));
+// Clics en enlaces de WhatsApp (encabezado, contacto, fichas): evento "contact".
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href*="wa.me/"]');
+  if (link) track('contact', { method: 'WhatsApp', link_location: link.closest('header, main, footer')?.tagName.toLowerCase() || 'page' });
+});
+
 const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 const CART_STORAGE_KEY = 'romasil-session-cart';
 // Mantener esta lista alineada con los productos data-available="true" del catálogo.
@@ -136,6 +197,7 @@ document.querySelectorAll('.product-card[data-available="true"] .add-button').fo
   persistCart();
   renderCart();
   showToast(`${card.dataset.name} agregado`);
+  track('add_to_cart', { currency: 'CLP', value: Number(card.dataset.price), items: [{ item_id: id, item_name: card.dataset.name, price: Number(card.dataset.price), quantity: 1 }] });
 }));
 
 cartItems.addEventListener('click', event => {
@@ -182,11 +244,22 @@ document.addEventListener('keydown', event => {
 });
 document.querySelector('#checkoutButton').addEventListener('click', () => {
   closeCart({ restoreFocus: false });
+  track('begin_checkout', cartEventParams());
   checkoutDialog.showModal();
   checkoutForm.elements.name.focus();
 });
 document.querySelector('#closeDialog').addEventListener('click', () => checkoutDialog.close());
 checkoutDialog.addEventListener('close', () => openCartButton.focus());
+// Parámetros de comercio electrónico de GA4 con el contenido actual del carrito (valor = productos, sin despacho).
+function cartEventParams(extra = {}) {
+  const items = [...cart.values()];
+  return {
+    currency: 'CLP',
+    value: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    items: items.map(item => ({ item_id: item.id, item_name: item.name, price: item.price, quantity: item.quantity })),
+    ...extra
+  };
+}
 function buildOrderSummary(data) {
   const cartItemsList = [...cart.values()];
   const items = cartItemsList.map(item => `${item.quantity} × ${item.name}${item.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n');
@@ -210,6 +283,7 @@ whatsappOrderButton?.addEventListener('click', () => {
     return;
   }
   const summary = buildOrderSummary(new FormData(checkoutForm));
+  track('generate_lead', cartEventParams({ lead_source: 'whatsapp_pedido' }));
   const waWindow = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`, '_blank');
   if (waWindow) waWindow.opener = null;
   else window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`);
@@ -269,11 +343,13 @@ checkoutForm.addEventListener('submit', async event => {
       throw new Error(result?.message || `El servicio de formularios respondió con estado ${response.status}`);
     }
 
+    track('generate_lead', cartEventParams({ lead_source: 'formulario_pedido' }));
     cart.clear();
     persistCart();
     renderCart();
     checkoutDialog.close();
-    window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`);
+    // Breve espera para que Analytics alcance a enviar generate_lead antes de salir hacia WhatsApp.
+    window.setTimeout(() => window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`), analyticsEnabled ? 300 : 0);
   } catch (error) {
     console.error('No fue posible registrar la solicitud', error);
     formStatus.textContent = 'No pudimos registrar la solicitud por correo. Puedes reintentar o continuar directamente por WhatsApp con el botón disponible en este formulario.';
