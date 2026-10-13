@@ -15,7 +15,8 @@ function enableAnalytics() {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() { window.dataLayer.push(arguments); };
   window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID);
+  // Solo medición: sin señales de Google ni personalización de anuncios (la política de privacidad no cubre fines publicitarios).
+  window.gtag('config', GA_MEASUREMENT_ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
