@@ -32,7 +32,7 @@ function showConsentBanner() {
   banner.className = 'consent-banner';
   banner.setAttribute('role', 'region');
   banner.setAttribute('aria-label', 'Preferencias de cookies');
-  banner.innerHTML = '<p>Usamos Google Analytics para saber cómo se usa la web y mejorarla. Solo se activa si lo aceptas. <a href="politica-de-privacidad.html#cookies">Más información</a></p><div class="consent-actions"><button type="button" class="button secondary" data-consent="denied">Rechazar</button><button type="button" class="button primary" data-consent="granted">Aceptar</button></div>';
+  banner.innerHTML = '<p>Usamos Google Analytics para saber cómo se usa la web y mejorarla. Solo se activa si lo aceptas. <a href="politica-de-privacidad.html#cookies">Ver política de cookies</a></p><div class="consent-actions"><button type="button" class="button secondary" data-consent="denied">Rechazar</button><button type="button" class="button primary" data-consent="granted">Aceptar</button></div>';
   banner.addEventListener('click', event => {
     const choice = event.target.closest('[data-consent]')?.dataset.consent;
     if (!choice) return;
