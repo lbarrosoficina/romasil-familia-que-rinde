@@ -1,0 +1,4 @@
+.vercel/
+.netlify/
+tmp/
+*.log
