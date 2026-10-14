@@ -41,9 +41,24 @@ Un solo comando deja todo el sitio al día: `05 Scripts/web/actualizar-web.ps1`.
 2. Aplica la planilla de precios `precios.csv`.
 3. Copia los precios a las tarjetas de la portada.
 4. Regenera las categorías, las fichas de producto, la página de cobertura, el carrito (`app.js`), el feed de Merchant Center y la lista de productos para Google de `productos.html`.
-5. Comprueba que cada precio coincida en todas partes. Termina con `OK` o con la lista de problemas.
+5. Comprueba que cada precio coincida en todas partes.
+6. Ejecuta `revisar-sitio.ps1`, que comprueba:
+   - que no haya enlaces ni imágenes rotos (incluidos `srcset` y el CSS);
+   - que los datos estructurados (JSON-LD) estén bien formados;
+   - que cada página tenga título, descripción y canonical correcto, y que el sitemap esté completo;
+   - que todas las imágenes tengan texto alternativo, que no haya id repetidos y que no haya código en línea.
 
-`actualizar-web.ps1 -SoloVerificar` revisa sin modificar nada.
+   También avisa de archivos de `assets/` que no se usan.
+
+Termina con `OK` o con la lista de problemas. `actualizar-web.ps1 -SoloVerificar` revisa sin modificar nada, y `revisar-sitio.ps1` se puede ejecutar por separado.
+
+## Imágenes y tipografías
+
+- Las tipografías (Baloo 2 y Poppins, licencia OFL) están en `assets/fonts` y se declaran al inicio de `styles.css`, solo con el subconjunto latin, que cubre el español. No se carga nada desde Google Fonts.
+- La foto principal de la portada usa `<picture>`: en pantallas de hasta 560 px se muestra `familia-hero-movil.webp`, un recorte vertical que conserva la resolución, porque en el celular la foto se recorta para llenar la pantalla.
+- El mapa de cobertura tiene versiones de 768 y 1200 px (`srcset`). La de 1536 px queda solo para la vista previa al compartir (`og:image`).
+- Las fotos de producto (800 px) ya tienen el tamaño justo para las tarjetas en celulares de alta densidad; no necesitan variantes.
+- Si se reemplaza una imagen, se publica con otro nombre (por ejemplo `-v2`), porque `assets/` se guarda 7 días en la caché del navegador.
 
 ### Cambio de precios
 
@@ -66,10 +81,10 @@ La lista de productos sale siempre de las tarjetas de `productos.html`; los gene
 `vercel.json` define una política de seguridad de contenido (`Content-Security-Policy`). Solo se permiten:
 
 - código propio (`app.js`) y Google Analytics (`*.googletagmanager.com`);
-- estilos propios y Google Fonts, con tipografías de `fonts.gstatic.com`;
+- estilos y tipografías propios;
 - conexiones a FormSubmit y Google Analytics.
 
-No se permite código en línea (`<script>` sin `src`, `onload=`, `onclick=`). Por eso las tipografías se activan desde `app.js` con el atributo `data-async-style`. Los bloques `application/ld+json` no son código ejecutable y no se ven afectados.
+No se permite código en línea (`<script>` sin `src`, `onload=`, `onclick=`); `revisar-sitio.ps1` lo detecta. Los bloques `application/ld+json` no son código ejecutable y no se ven afectados.
 
 Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario), hay que añadir su dominio a la directiva que corresponda o el navegador lo bloqueará. El servidor local `05 Scripts/web/serve.ps1` aplica las mismas cabeceras de `vercel.json`, así que los bloqueos se ven en la consola antes de publicar.
 
