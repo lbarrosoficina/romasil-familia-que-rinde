@@ -62,13 +62,38 @@ document.addEventListener('click', event => {
 
 const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 const CART_STORAGE_KEY = 'romasil-session-cart';
-// Mantener esta lista alineada con los productos data-available="true" del catálogo.
-// Así, los productos ocultos permanecen en el HTML para una futura reactivación, pero no se pueden pedir por un carrito antiguo.
-const AVAILABLE_PRODUCT_IDS = new Set(['filetillo-pollo', 'trutro-largo-pollo', 'pechuga-pollo', 'malaya-cerdo', 'salmon-nacional', 'camaron-ecuatoriano', 'camaron-sin-cascara', 'ostion-media-concha', 'ostion-sin-coral', 'machas-media-concha']);
+// Nombre y precio de cada producto a la venta. El carrito toma estos datos de aquí y no del navegador,
+// así un carrito guardado no conserva precios antiguos ni valores modificados a mano.
+// <catalogo> Generado por 05 Scripts/web/build-productos.ps1 desde las tarjetas data-available="true" de productos.html. No editar a mano.
+const CATALOG = {
+  'filetillo-pollo': { name: 'Filetillo de pollo congelado', price: 5700, pricedByKilo: false },
+  'trutro-largo-pollo': { name: 'Trutro largo de pollo congelado', price: 3300, pricedByKilo: false },
+  'pechuga-pollo': { name: 'Pechuga deshuesada de pollo', price: 5300, pricedByKilo: false },
+  'malaya-cerdo': { name: 'Malaya de cerdo', price: 13000, pricedByKilo: false },
+  'salmon-nacional': { name: 'Salmón nacional filete', price: 7950, pricedByKilo: false },
+  'camaron-ecuatoriano': { name: 'Camarón ecuatoriano con cáscara 36/40', price: 10350, pricedByKilo: false },
+  'camaron-sin-cascara': { name: 'Camarón ecuatoriano sin cáscara 36/40', price: 11600, pricedByKilo: false },
+  'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
+  'ostion-sin-coral': { name: 'Ostión sin coral 20/40', price: 11900, pricedByKilo: false },
+  'machas-media-concha': { name: 'Machas en media concha grandes', price: 7900, pricedByKilo: false }
+};
+// </catalogo>
+const MAX_QUANTITY = 99;
+function cartLine(id, quantity) {
+  return { id, ...CATALOG[id], quantity };
+}
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+}
+// El navegador solo guarda id y cantidad; los productos que ya no están a la venta se descartan.
 let storedCart = [];
 try {
   const parsedCart = JSON.parse(sessionStorage.getItem(CART_STORAGE_KEY) || '[]');
-  if (Array.isArray(parsedCart)) storedCart = parsedCart.filter(item => AVAILABLE_PRODUCT_IDS.has(item.id));
+  if (Array.isArray(parsedCart)) {
+    storedCart = parsedCart
+      .filter(item => Object.hasOwn(CATALOG, item?.id) && Number.isInteger(item.quantity) && item.quantity > 0)
+      .map(item => cartLine(item.id, Math.min(item.quantity, MAX_QUANTITY)));
+  }
 } catch {
   storedCart = [];
 }
@@ -94,7 +119,7 @@ const pageRegions = document.querySelectorAll('body > header, body > main, body 
 const WHATSAPP_NUMBER = '56962319733';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
-const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/lbarros.oficina@gmail.com';
+const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil.cl';
 
 function setPageRegionsInert(isInert) {
   pageRegions.forEach(region => { region.inert = isInert; });
@@ -102,7 +127,7 @@ function setPageRegionsInert(isInert) {
 
 function persistCart() {
   try {
-    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify([...cart.values()]));
+    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify([...cart.values()].map(({ id, quantity }) => ({ id, quantity }))));
   } catch {
     // El carrito sigue funcionando en memoria si el navegador bloquea el almacenamiento.
   }
@@ -182,31 +207,47 @@ function renderCart() {
     cartItems.innerHTML = '<div class="empty-cart"><svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M4.9 6l14.2 12M19.1 6 4.9 18M9 3.5l3 2.5 3-2.5M9 20.5l3-2.5 3 2.5"/></svg><h3>Tu pedido está vacío</h3><p>Agrega productos del catálogo para comenzar.</p></div>';
     return;
   }
-  cartItems.innerHTML = items.map(item => `
+  cartItems.innerHTML = items.map(item => {
+    const id = escapeHtml(item.id);
+    const name = escapeHtml(item.name);
+    return `
     <div class="cart-line">
-      <div><h3>${item.name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p><div class="quantity"><button type="button" data-action="decrease" data-id="${item.id}" aria-label="Quitar una unidad de ${item.name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${item.id}" aria-label="Agregar una unidad de ${item.name}">+</button></div><button class="remove" type="button" data-action="remove" data-id="${item.id}" aria-label="Eliminar ${item.name} del pedido">Eliminar</button></div>
+      <div><h3>${name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p><div class="quantity"><button type="button" data-action="decrease" data-id="${id}" aria-label="Quitar una unidad de ${name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${id}" aria-label="Agregar una unidad de ${name}">+</button></div><button class="remove" type="button" data-action="remove" data-id="${id}" aria-label="Eliminar ${name} del pedido">Eliminar</button></div>
       <strong>${money.format(item.price * item.quantity)}</strong>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 document.querySelectorAll('.product-card[data-available="true"] .add-button').forEach(button => button.addEventListener('click', () => {
   const card = button.closest('.product-card');
   const id = card.dataset.id;
+  if (!Object.hasOwn(CATALOG, id)) {
+    console.warn(`El producto "${id}" está a la venta en la página pero no en CATALOG de app.js. Vuelve a ejecutar build-productos.ps1.`);
+    showToast('Este producto no se puede agregar en este momento. Escríbenos por WhatsApp.');
+    return;
+  }
   const existing = cart.get(id);
-  const pricedByKilo = card.querySelector('.product-footer strong')?.textContent.includes('/kg') || false;
-  cart.set(id, { id, name: card.dataset.name, price: Number(card.dataset.price), pricedByKilo, quantity: existing ? existing.quantity + 1 : 1 });
+  const line = cartLine(id, Math.min((existing?.quantity || 0) + 1, MAX_QUANTITY));
+  cart.set(id, line);
   persistCart();
   renderCart();
-  showToast(`${card.dataset.name} agregado`);
-  track('add_to_cart', { currency: 'CLP', value: Number(card.dataset.price), items: [{ item_id: id, item_name: card.dataset.name, price: Number(card.dataset.price), quantity: 1 }] });
+  showToast(`${line.name} agregado`);
+  track('add_to_cart', { currency: 'CLP', value: line.price, items: [{ item_id: id, item_name: line.name, price: line.price, quantity: 1 }] });
 }));
+// Aviso para quien mantiene la web: un precio de la página distinto al de CATALOG indica que falta volver a generar.
+document.querySelectorAll('.product-card[data-available="true"]').forEach(card => {
+  const product = CATALOG[card.dataset.id];
+  if (product && Number(card.dataset.price) !== product.price) {
+    console.warn(`Precio distinto para "${card.dataset.id}": la página dice ${card.dataset.price} y CATALOG ${product.price}. Vuelve a ejecutar build-productos.ps1.`);
+  }
+});
 
 cartItems.addEventListener('click', event => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;
   const item = cart.get(button.dataset.id);
   if (!item) return;
-  if (button.dataset.action === 'increase') item.quantity += 1;
+  if (button.dataset.action === 'increase') item.quantity = Math.min(item.quantity + 1, MAX_QUANTITY);
   if (button.dataset.action === 'decrease') item.quantity -= 1;
   if (button.dataset.action === 'remove' || item.quantity <= 0) cart.delete(item.id);
   persistCart();
@@ -269,7 +310,8 @@ function buildOrderSummary(data) {
   const shippingLabel = shipping === 0 ? 'Gratis' : money.format(shipping);
   const addressLine2 = String(data.get('addressLine2') || '').trim();
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
-  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}`;
+  const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
+  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}`;
 }
 
 // Botón "Enviar pedido por WhatsApp": valida los datos y abre WhatsApp con el cliente y el pedido completos.
@@ -304,14 +346,6 @@ checkoutForm.addEventListener('submit', async event => {
 
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   const data = new FormData(checkoutForm);
-  const cartItemsList = [...cart.values()];
-  const items = cartItemsList.map(item => `${item.quantity} × ${item.name}${item.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n');
-  const total = [...cart.values()].reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const shippingLabel = shipping === 0 ? 'Gratis' : money.format(shipping);
-  const addressLine2 = String(data.get('addressLine2') || '').trim();
-  const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
-  const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
   const summary = buildOrderSummary(data);
   submitButton.disabled = true;
   submitButton.textContent = 'Enviando…';
@@ -333,7 +367,7 @@ checkoutForm.addEventListener('submit', async event => {
         telefono: data.get('phone'),
         email: data.get('email'),
         direccion: data.get('addressLine1'),
-        complementoDireccion: addressLine2,
+        complementoDireccion: String(data.get('addressLine2') || '').trim(),
         comuna: data.get('commune'),
         pedido: summary
       })

@@ -86,9 +86,11 @@ La contraseña SMTP es una clave API de Resend y no debe copiarse a este documen
 
 El formulario del checkout todavía no usa Resend. Actualmente:
 
-1. El navegador envía la solicitud a `https://formsubmit.co/ajax/lbarros.oficina@gmail.com`.
-2. FormSubmit reenvía la solicitud a `lbarros.oficina@gmail.com`.
+1. El navegador envía la solicitud a `https://formsubmit.co/ajax/ventas@congeladosromasil.cl` (constante `ORDER_FORM_ENDPOINT` en `app.js`).
+2. FormSubmit envía la solicitud a `ventas@congeladosromasil.cl`, y el Worker `ventas-doble-reenvio` la reenvía a `lbarros.oficina@gmail.com` y `rgp1986@gmail.com`.
 3. Si el registro es exitoso, la web abre WhatsApp al `+56 9 6231 9733` con el resumen.
+
+FormSubmit exige activar cada dirección nueva: el primer envío dispara un correo de activación a `ventas@congeladosromasil.cl`, y hasta hacer clic en el enlace no entrega pedidos. Tras activarla, FormSubmit entrega un código aleatorio que puede reemplazar la dirección en `ORDER_FORM_ENDPOINT` (`https://formsubmit.co/ajax/<código>`), para no exponer el correo en el formulario.
 
 Para migrar el formulario a Resend se requiere una función del lado del servidor. La clave API de Resend debe guardarse como variable de entorno en Netlify o Vercel y nunca dentro de `dist/app.js` ni en GitHub.
 
