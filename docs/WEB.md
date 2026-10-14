@@ -28,6 +28,51 @@ lbarrosoficina/romasil-familia-que-rinde · rama main
 6. Verificar que Vercel publicó el mismo commit.
 7. Comprobar `https://congeladosromasil.cl`, las páginas principales, imágenes, catálogo, carrito y navegación.
 
+## Generadores (`05 Scripts/web`, fuera de este repositorio)
+
+Un solo comando deja todo el sitio al día: `05 Scripts/web/actualizar-web.ps1`.
+
+1. Copia las plantillas comunes de `05 Scripts/web/plantillas` a todas las páginas:
+   - `recursos-head.html`: ícono, tipografías y estilos del `<head>`;
+   - `encabezado.html`: logo, menú, WhatsApp y botón del carrito;
+   - `pie.html`: pie de página, carrito, formulario de pedido y `app.js`.
+
+   El menú, el pie y el formulario se cambian solo en la plantilla, nunca en las páginas. La portada conserva su encabezado flotante y cada página su enlace del menú marcado como actual.
+2. Aplica la planilla de precios `precios.csv`.
+3. Copia los precios a las tarjetas de la portada.
+4. Regenera las categorías, las fichas de producto, la página de cobertura, el carrito (`app.js`), el feed de Merchant Center y la lista de productos para Google de `productos.html`.
+5. Comprueba que cada precio coincida en todas partes. Termina con `OK` o con la lista de problemas.
+
+`actualizar-web.ps1 -SoloVerificar` revisa sin modificar nada.
+
+### Cambio de precios
+
+1. Abrir `05 Scripts/web/precios.csv` (se abre con Excel) y cambiar la columna `precio`. Acepta `8200`, `8.200` o `$8.200`.
+2. Ejecutar `actualizar-web.ps1`.
+3. Publicar siguiendo el flujo de trabajo.
+
+### Productos "próximamente"
+
+Las fichas de atún y reineta las genera `build-productos.ps1` con los textos `pronto` de cada producto: sin precio, sin datos de Producto para Google y con la etiqueta "Pronto". En `precios.csv` aparecen con el precio vacío. Para ponerlos a la venta:
+
+1. Si su formato dice "por confirmar", corregir la tarjeta en `productos.html` (el script se niega a ponerlo a la venta así).
+2. Revisar sus textos de venta (`title`, `desc`, `faq`) en `build-productos.ps1` y el texto de su categoría en `build-categorias.ps1`.
+3. Escribir el precio en `precios.csv` y ejecutar `actualizar-web.ps1`. Queda a la venta en el catálogo, la ficha, la categoría, el carrito, el feed y los datos para Google.
+
+La lista de productos sale siempre de las tarjetas de `productos.html`; los generadores no tienen listas propias. Un producto completamente nuevo necesita su tarjeta en `productos.html` y sus textos en `$products` de `build-productos.ps1`.
+
+## Seguridad de contenido
+
+`vercel.json` define una política de seguridad de contenido (`Content-Security-Policy`). Solo se permiten:
+
+- código propio (`app.js`) y Google Analytics (`*.googletagmanager.com`);
+- estilos propios y Google Fonts, con tipografías de `fonts.gstatic.com`;
+- conexiones a FormSubmit y Google Analytics.
+
+No se permite código en línea (`<script>` sin `src`, `onload=`, `onclick=`). Por eso las tipografías se activan desde `app.js` con el atributo `data-async-style`. Los bloques `application/ld+json` no son código ejecutable y no se ven afectados.
+
+Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario), hay que añadir su dominio a la directiva que corresponda o el navegador lo bloqueará. El servidor local `05 Scripts/web/serve.ps1` aplica las mismas cabeceras de `vercel.json`, así que los bloqueos se ven en la consola antes de publicar.
+
 ## Comprobaciones posteriores a la publicación
 
 - La portada y el catálogo cargan sin errores.

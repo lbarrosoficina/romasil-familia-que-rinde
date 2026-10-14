@@ -18,19 +18,6 @@
       <g:product_type>Pollo</g:product_type>
     </item>
     <item>
-      <g:id>pechuga-pollo</g:id>
-      <g:title>Pechuga de pollo deshuesada congelada 750 g</g:title>
-      <g:description>Pechuga de pollo deshuesada y laminada, fácil de porcionar. Una base versátil para la plancha, el horno o preparaciones en trozos.</g:description>
-      <g:link>https://congeladosromasil.cl/pechuga-de-pollo-deshuesada.html</g:link>
-      <g:image_link>https://congeladosromasil.cl/assets/pollo-pechuga-750g.webp</g:image_link>
-      <g:availability>in_stock</g:availability>
-      <g:price>5300 CLP</g:price>
-      <g:condition>new</g:condition>
-      <g:identifier_exists>no</g:identifier_exists>
-      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Pollo</g:product_type>
-    </item>
-    <item>
       <g:id>trutro-largo-pollo</g:id>
       <g:title>Trutro largo de pollo congelado 800 g</g:title>
       <g:description>Trutros largos de pollo, el corte más jugoso para el horno, la olla o la parrilla. Ideales para asados familiares y cocciones lentas.</g:description>
@@ -38,6 +25,19 @@
       <g:image_link>https://congeladosromasil.cl/assets/pollo-trutro-largo.webp</g:image_link>
       <g:availability>in_stock</g:availability>
       <g:price>3300 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
+      <g:product_type>Pollo</g:product_type>
+    </item>
+    <item>
+      <g:id>pechuga-pollo</g:id>
+      <g:title>Pechuga de pollo deshuesada congelada 750 g</g:title>
+      <g:description>Pechuga de pollo deshuesada y laminada, fácil de porcionar. Una base versátil para la plancha, el horno o preparaciones en trozos.</g:description>
+      <g:link>https://congeladosromasil.cl/pechuga-de-pollo-deshuesada.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/pollo-pechuga-750g.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>5300 CLP</g:price>
       <g:condition>new</g:condition>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>

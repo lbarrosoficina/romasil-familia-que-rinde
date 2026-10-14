@@ -1,3 +1,7 @@
+// Hojas de estilo que se cargan sin bloquear la página (tipografías): llegan con media="print" y aquí pasan a "all".
+// Reemplaza al antiguo onload="this.media='all'", que la política de seguridad de contenido (vercel.json) no permite.
+document.querySelectorAll('link[data-async-style]').forEach(link => { link.media = 'all'; });
+
 // Google Analytics 4: solo se carga si la persona acepta la analítica en el aviso de cookies (ver politica-de-privacidad.html#cookies).
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
