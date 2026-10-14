@@ -119,6 +119,9 @@ const pageRegions = document.querySelectorAll('body > header, body > main, body 
 const WHATSAPP_NUMBER = '56962319733';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
+// Pedidos: primero la función propia con Resend (api/pedido.js); FormSubmit queda como respaldo automático.
+const ORDER_API_ENDPOINT = '/api/pedido';
+const ORDER_API_TIMEOUT_MS = 12000;
 const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil.cl';
 
 function setPageRegionsInert(isInert) {
@@ -302,7 +305,7 @@ function cartEventParams(extra = {}) {
     ...extra
   };
 }
-function buildOrderSummary(data) {
+function buildOrderSummary(data, orderNumber = '') {
   const cartItemsList = [...cart.values()];
   const items = cartItemsList.map(item => `${item.quantity} × ${item.name}${item.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n');
   const total = cartItemsList.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -311,7 +314,8 @@ function buildOrderSummary(data) {
   const addressLine2 = String(data.get('addressLine2') || '').trim();
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
   const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
-  return `Hola, quiero solicitar este pedido en Congelados Romasil.\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}`;
+  const orderLine = orderNumber ? `\nN° de solicitud: ${orderNumber}` : '';
+  return `Hola, quiero solicitar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}`;
 }
 
 // Botón "Enviar pedido por WhatsApp": valida los datos y abre WhatsApp con el cliente y el pedido completos.
@@ -346,52 +350,112 @@ checkoutForm.addEventListener('submit', async event => {
 
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   const data = new FormData(checkoutForm);
-  const summary = buildOrderSummary(data);
   submitButton.disabled = true;
   submitButton.textContent = 'Enviando…';
   formStatus.textContent = 'Registrando tu solicitud de forma segura…';
-
-  try {
-    const response = await fetch(ORDER_FORM_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: 'Nueva solicitud de pedido — Congelados Romasil',
-        _template: 'table',
-        _captcha: 'false',
-        _honey: data.get('_honey') || '',
-        nombre: data.get('name'),
-        telefono: data.get('phone'),
-        email: data.get('email'),
-        direccion: data.get('addressLine1'),
-        complementoDireccion: String(data.get('addressLine2') || '').trim(),
-        comuna: data.get('commune'),
-        pedido: summary
-      })
-    });
-    const result = await response.json().catch(() => null);
-    const submissionSucceeded = result?.success === true || String(result?.success).toLowerCase() === 'true';
-    if (!response.ok || !submissionSucceeded) {
-      throw new Error(result?.message || `El servicio de formularios respondió con estado ${response.status}`);
-    }
-
-    track('generate_lead', cartEventParams({ lead_source: 'formulario_pedido' }));
-    cart.clear();
-    persistCart();
-    renderCart();
-    checkoutDialog.close();
-    // Breve espera para que Analytics alcance a enviar generate_lead antes de salir hacia WhatsApp.
-    window.setTimeout(() => window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`), analyticsEnabled ? 300 : 0);
-  } catch (error) {
-    console.error('No fue posible registrar la solicitud', error);
-    formStatus.textContent = 'No pudimos registrar la solicitud por correo. Puedes reintentar o continuar directamente por WhatsApp con el botón disponible en este formulario.';
+  const resetButton = () => {
     submitButton.disabled = false;
     submitButton.textContent = 'Enviar solicitud';
+  };
+
+  // 1. Envío principal: función propia con Resend (aviso a ventas@ y confirmación al cliente).
+  // 2. Respaldo: si la función no responde o falla, FormSubmit, como antes.
+  let orderNumber = '';
+  let channel = '';
+  try {
+    const result = await sendOrderByResend(data);
+    if (result.status === 'ok') {
+      orderNumber = result.orderNumber;
+      channel = 'resend';
+    } else if (result.status === 'invalid') {
+      formStatus.textContent = result.message;
+      resetButton();
+      return;
+    }
+  } catch (error) {
+    console.warn('Falló el envío principal del pedido; se usa el respaldo', error);
   }
+  if (!channel) {
+    try {
+      await sendOrderByFormSubmit(data, buildOrderSummary(data));
+      channel = 'formsubmit';
+    } catch (error) {
+      console.error('No fue posible registrar la solicitud', error);
+      formStatus.textContent = 'No pudimos registrar la solicitud por correo. Puedes reintentar o continuar directamente por WhatsApp con el botón disponible en este formulario.';
+      resetButton();
+      return;
+    }
+  }
+
+  const summary = buildOrderSummary(data, orderNumber);
+  track('generate_lead', cartEventParams({ lead_source: 'formulario_pedido', order_channel: channel }));
+  cart.clear();
+  persistCart();
+  renderCart();
+  checkoutDialog.close();
+  // Breve espera para que Analytics alcance a enviar generate_lead antes de salir hacia WhatsApp.
+  window.setTimeout(() => window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`), analyticsEnabled ? 300 : 0);
 });
+
+// Envío principal. Devuelve { status: 'ok', orderNumber }, { status: 'invalid', message } si los datos no pasan
+// la validación del servidor, o lanza un error si la función falla (y entonces se usa el respaldo).
+async function sendOrderByResend(data) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), ORDER_API_TIMEOUT_MS);
+  try {
+    const response = await fetch(ORDER_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        _honey: data.get('_honey') || '',
+        name: data.get('name'),
+        phone: data.get('phone'),
+        email: data.get('email'),
+        addressLine1: data.get('addressLine1'),
+        addressLine2: String(data.get('addressLine2') || '').trim(),
+        commune: data.get('commune'),
+        privacyConsent: data.get('privacyConsent') === 'Aceptado',
+        items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity }))
+      }),
+      signal: controller.signal
+    });
+    const result = await response.json().catch(() => null);
+    if (response.ok && result?.ok) return { status: 'ok', orderNumber: result.pedido || '' };
+    if (response.status === 400 && result?.error) return { status: 'invalid', message: result.error };
+    throw new Error(result?.error || `La función de pedidos respondió con estado ${response.status}`);
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+// Respaldo: FormSubmit (dirección activada para congeladosromasil.cl; ver docs/CORREO.md).
+async function sendOrderByFormSubmit(data, summary) {
+  const response = await fetch(ORDER_FORM_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({
+      _subject: 'Nueva solicitud de pedido — Congelados Romasil (respaldo)',
+      _template: 'table',
+      _captcha: 'false',
+      _honey: data.get('_honey') || '',
+      nombre: data.get('name'),
+      telefono: data.get('phone'),
+      email: data.get('email'),
+      direccion: data.get('addressLine1'),
+      complementoDireccion: String(data.get('addressLine2') || '').trim(),
+      comuna: data.get('commune'),
+      pedido: summary
+    })
+  });
+  const result = await response.json().catch(() => null);
+  const submissionSucceeded = result?.success === true || String(result?.success).toLowerCase() === 'true';
+  if (!response.ok || !submissionSucceeded) {
+    throw new Error(result?.message || `El servicio de formularios respondió con estado ${response.status}`);
+  }
+}
 const year = document.querySelector('#year');
 if (year) year.textContent = new Date().getFullYear();
 renderCart();

@@ -84,15 +84,27 @@ La contraseña SMTP es una clave API de Resend y no debe copiarse a este documen
 
 ## Formulario de la web
 
-El formulario del checkout todavía no usa Resend. Actualmente:
+El checkout usa Resend como envío principal y FormSubmit como respaldo automático:
 
-1. El navegador envía la solicitud a `https://formsubmit.co/ajax/ventas@congeladosromasil.cl` (constante `ORDER_FORM_ENDPOINT` en `app.js`).
-2. FormSubmit envía la solicitud a `ventas@congeladosromasil.cl`, y el Worker `ventas-doble-reenvio` la reenvía a `lbarros.oficina@gmail.com` y `rgp1986@gmail.com`.
-3. Si el registro es exitoso, la web abre WhatsApp al `+56 9 6231 9733` con el resumen.
+```text
+Cliente presiona "Enviar solicitud"
+  → app.js envía el pedido a /api/pedido (función de Vercel, api/pedido.js)
+     → valida datos, recalcula totales con api/_catalogo.json
+     → Resend: "Nuevo pedido …" a ventas@ (reply-to: cliente)
+     → Resend: "Recibimos tu solicitud …" al cliente (reply-to: ventas@)
+  → si la función no responde en 12 s o falla (error 5xx, sin clave, Resend caído):
+     app.js envía el pedido a FormSubmit (ventas@, asunto "(respaldo)")
+  → la web abre WhatsApp al +56 9 6231 9733 con el resumen (incluye el N° de solicitud si salió por Resend)
+```
 
-FormSubmit exige activar cada dirección nueva: el primer envío dispara un correo de activación a `ventas@congeladosromasil.cl`, y hasta hacer clic en el enlace no entrega pedidos. Tras activarla, FormSubmit entrega un código aleatorio que puede reemplazar la dirección en `ORDER_FORM_ENDPOINT` (`https://formsubmit.co/ajax/<código>`), para no exponer el correo en el formulario.
+- **Clave:** la función lee `RESEND_API_KEY` de las variables de entorno de Vercel (proyecto `romasil-familia-que-rinde`, entornos Production y Preview). Nunca se escribe en el código ni en GitHub. Sin la clave, la función responde 503 y todo sale por FormSubmit.
+- **Remitente:** `ventas@congeladosromasil.cl`, dominio verificado en Resend. Plan gratuito: 3.000 correos al mes y 100 al día (cada pedido usa 2).
+- **Validación en el servidor:** nombre, teléfono, correo, dirección, comuna con despacho, aceptación de la política, productos del catálogo (máximo 99 unidades). Los datos mal ingresados devuelven 400 y la web muestra el mensaje, sin usar el respaldo. El campo trampa `_honey` se responde como éxito sin enviar nada. Solo se aceptan envíos desde el mismo dominio.
+- **Duplicados:** cada envío lleva una `Idempotency-Key` (N° de solicitud). Si la web pasa al respaldo por demora, puede llegar el mismo pedido dos veces (por Resend y por FormSubmit); se prefiere un duplicado a perder un pedido.
+- **Catálogo del servidor:** `api/_catalogo.json` lo genera `build-productos.ps1` (vía `actualizar-web.ps1`) junto con el carrito; la verificación comprueba que sus precios coincidan.
+- **Registros:** los errores de envío quedan en los logs de la función en Vercel ("No se pudo enviar el pedido a ventas", "No se pudo enviar la confirmación al cliente").
 
-Para migrar el formulario a Resend se requiere una función del lado del servidor. La clave API de Resend debe guardarse como variable de entorno en Netlify o Vercel y nunca dentro de `dist/app.js` ni en GitHub.
+**FormSubmit (respaldo):** `https://formsubmit.co/ajax/ventas@congeladosromasil.cl` (constante `ORDER_FORM_ENDPOINT` en `app.js`). La dirección está activada para `congeladosromasil.cl`. FormSubmit exige activar cada dirección nueva por sitio: el primer envío dispara un correo de activación y hasta hacer clic no entrega pedidos.
 
 ## Pruebas recomendadas
 

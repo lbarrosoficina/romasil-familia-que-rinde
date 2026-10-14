@@ -1,0 +1,12 @@
+{
+  "filetillo-pollo": {"name": "Filetillo de pollo congelado", "price": 5700, "pricedByKilo": false},
+  "trutro-largo-pollo": {"name": "Trutro largo de pollo congelado", "price": 3300, "pricedByKilo": false},
+  "pechuga-pollo": {"name": "Pechuga deshuesada de pollo", "price": 5300, "pricedByKilo": false},
+  "malaya-cerdo": {"name": "Malaya de cerdo", "price": 13000, "pricedByKilo": false},
+  "salmon-nacional": {"name": "Salmón nacional filete", "price": 7950, "pricedByKilo": false},
+  "camaron-ecuatoriano": {"name": "Camarón ecuatoriano con cáscara 36/40", "price": 10350, "pricedByKilo": false},
+  "camaron-sin-cascara": {"name": "Camarón ecuatoriano sin cáscara 36/40", "price": 11600, "pricedByKilo": false},
+  "ostion-media-concha": {"name": "Ostión con coral en media concha", "price": 6900, "pricedByKilo": false},
+  "ostion-sin-coral": {"name": "Ostión sin coral 20/40", "price": 11900, "pricedByKilo": false},
+  "machas-media-concha": {"name": "Machas en media concha grandes", "price": 7900, "pricedByKilo": false}
+}
