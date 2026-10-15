@@ -249,7 +249,9 @@ dialog::backdrop{background:rgba(15,20,40,.55)}
 .error-secondary{background:var(--surface);color:var(--navy);border-color:var(--navy)}
 
 /* Responsivo */
-@media (max-width:1060px){
+/* Menú con 6 enlaces (incluye Recetas): pasa a botón "Menú" bajo 1180 px y se aprieta un poco hasta 1320 px */
+@media (min-width:1181px) and (max-width:1320px){#primaryNav{gap:20px}}
+@media (max-width:1180px){
   .nav-toggle{display:inline-flex}
   .topbar .wrap{flex-wrap:wrap;gap:12px;min-height:72px}
   .brand img{height:46px}
@@ -258,6 +260,8 @@ dialog::backdrop{background:rgba(15,20,40,.55)}
   #primaryNav{display:none;order:5;width:100%;flex-direction:column;gap:0;margin:0 0 12px;background:var(--surface);border-radius:var(--radius);padding:6px 4px}
   #primaryNav.is-open{display:flex}
   #primaryNav a{padding:14px 12px;border-bottom:1px solid var(--line)}
+}
+@media (max-width:1060px){
   .coverage-grid,.support-grid{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
 }
