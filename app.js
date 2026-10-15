@@ -75,7 +75,7 @@ const CATALOG = {
   'camaron-sin-cascara': { name: 'Camarón ecuatoriano sin cáscara 36/40', price: 11600, pricedByKilo: false },
   'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
   'ostion-sin-coral': { name: 'Ostión sin coral 20/40', price: 11900, pricedByKilo: false },
-  'machas-media-concha': { name: 'Machas en media concha grandes', price: 7900, pricedByKilo: false }
+  'machas-media-concha': { name: 'Machas en media concha congeladas', price: 7900, pricedByKilo: false }
 };
 // </catalogo>
 const MAX_QUANTITY = 99;
