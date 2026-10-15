@@ -15,7 +15,13 @@
       <g:condition>new</g:condition>
       <g:brand>Super Pollo</g:brand>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Pollo</g:product_type>
+      <g:product_type>Pollo &gt; Filetillo de pollo</g:product_type>
+      <g:product_highlight>Formato: Bolsa 700 g</g:product_highlight>
+      <g:product_highlight>Ideal para: Salteados, wraps, ensaladas, tacos y arroces</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Filetillo (tiras de pechuga)</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>700 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>trutro-largo-pollo</g:id>
@@ -28,7 +34,13 @@
       <g:condition>new</g:condition>
       <g:brand>Super Pollo</g:brand>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Pollo</g:product_type>
+      <g:product_type>Pollo &gt; Trutro de pollo</g:product_type>
+      <g:product_highlight>Formato: Bolsa 800 g</g:product_highlight>
+      <g:product_highlight>Ideal para: Horno, parrilla, cazuela y guisos</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Trutro largo (trutro corto y contratrutro)</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>800 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>pechuga-pollo</g:id>
@@ -41,7 +53,13 @@
       <g:condition>new</g:condition>
       <g:brand>Super Pollo</g:brand>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Pollo</g:product_type>
+      <g:product_type>Pollo &gt; Pechuga de pollo</g:product_type>
+      <g:product_highlight>Formato: Bolsa 750 g</g:product_highlight>
+      <g:product_highlight>Ideal para: Plancha, apanados, horno, cazuelas y currys</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Pechuga deshuesada y laminada</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>750 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>malaya-cerdo</g:id>
@@ -55,7 +73,12 @@
       <g:brand>Super Cerdo</g:brand>
       <g:gtin>7809611718617</g:gtin>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Cerdo</g:product_type>
+      <g:product_type>Cerdo &gt; Malaya de cerdo</g:product_type>
+      <g:product_highlight>Formato: Unidad aprox. 900 g</g:product_highlight>
+      <g:product_highlight>Ideal para: Parrilla, horno y arrollado casero</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Malaya</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>Aprox. 900 g por unidad</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>salmon-nacional</g:id>
@@ -69,7 +92,14 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Pescados</g:product_type>
+      <g:product_type>Pescados &gt; Salmón</g:product_type>
+      <g:product_highlight>Formato: Filete sellado al vacío 500 g</g:product_highlight>
+      <g:product_highlight>Ideal para: Horno, plancha, papillote y ensaladas</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Origen</g:attribute_name><g:attribute_value>Chile (salmón nacional)</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Filete con piel</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>500 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Sellado al vacío</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>camaron-ecuatoriano</g:id>
@@ -83,7 +113,15 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Camarones</g:product_type>
+      <g:product_type>Camarones &gt; Camarón con cáscara</g:product_type>
+      <g:product_highlight>Formato: Crudo con cáscara, sin cabeza · Bolsa 1 kg</g:product_highlight>
+      <g:product_highlight>Ideal para: Al ajillo, parrilla, picoteos y fondos de mariscos</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Origen</g:attribute_name><g:attribute_value>Ecuador</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Calibre</g:attribute_name><g:attribute_value>36/40 unidades por libra</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Crudo, con cáscara y sin cabeza</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>1 kg</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>camaron-sin-cascara</g:id>
@@ -97,7 +135,15 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Camarones</g:product_type>
+      <g:product_type>Camarones &gt; Camarón sin cáscara</g:product_type>
+      <g:product_highlight>Formato: Crudo sin cáscara · Bolsa 1 kg</g:product_highlight>
+      <g:product_highlight>Ideal para: Pastas, arroces, salteados, tacos y ceviche cocido</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Origen</g:attribute_name><g:attribute_value>Ecuador</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Calibre</g:attribute_name><g:attribute_value>36/40 unidades por libra</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Crudo y sin cáscara</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>1 kg</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>ostion-media-concha</g:id>
@@ -111,7 +157,14 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Mariscos</g:product_type>
+      <g:product_type>Mariscos &gt; Ostiones</g:product_type>
+      <g:product_highlight>Formato: Bandeja aprox. 250 g · 10 unidades</g:product_highlight>
+      <g:product_highlight>Ideal para: A la parmesana, gratinados y al horno</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Con coral, en media concha</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Unidades</g:attribute_name><g:attribute_value>10</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>Aprox. 250 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bandeja</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>ostion-sin-coral</g:id>
@@ -125,7 +178,14 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Mariscos</g:product_type>
+      <g:product_type>Mariscos &gt; Ostiones</g:product_type>
+      <g:product_highlight>Formato: Calibre 20/40 · Bolsa 1 kg</g:product_highlight>
+      <g:product_highlight>Ideal para: Al pil pil, salteados, pastas, arroces y gratinados</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Calibre</g:attribute_name><g:attribute_value>20/40 unidades por libra</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Carne de ostión limpia, sin coral ni concha</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>1 kg</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
     <item>
       <g:id>machas-media-concha</g:id>
@@ -139,7 +199,13 @@
       <g:brand>Romasil</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
-      <g:product_type>Mariscos</g:product_type>
+      <g:product_type>Mariscos &gt; Machas</g:product_type>
+      <g:product_highlight>Formato: Bandeja 12 unidades</g:product_highlight>
+      <g:product_highlight>Ideal para: A la parmesana y gratinadas</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Machas grandes en media concha</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Unidades</g:attribute_name><g:attribute_value>12</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bandeja</g:attribute_value></g:product_detail>
     </item>
   </channel>
 </rss>
