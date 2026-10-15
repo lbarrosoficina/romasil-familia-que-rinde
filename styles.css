@@ -102,7 +102,8 @@ button{font:inherit;cursor:pointer}
 .coverage .eyebrow{color:var(--accent)}
 .coverage p{color:#D6DEF5}
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 26px}
-.chips span{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-weight:800;padding:9px 18px;border-radius:999px}
+.chips span,.chips a{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-weight:800;padding:9px 18px;border-radius:999px;text-decoration:none}
+.chips a:hover{text-decoration:underline}
 .chips .icon{width:18px;height:18px}
 
 /* Contacto y preguntas */
