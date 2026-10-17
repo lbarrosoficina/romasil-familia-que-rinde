@@ -6,7 +6,7 @@
     <description>Pollo, cerdo, pescados y mariscos congelados con despacho en Providencia, Ñuñoa y Las Condes.</description>
     <item>
       <g:id>filetillo-pollo</g:id>
-      <g:title>Filetillo de pollo congelado 700 g</g:title>
+      <g:title>Filetito de pollo congelado 700 g</g:title>
       <g:description>Tiras de pechuga de pollo congeladas, prácticas para sartén, horno o air fryer. Se cocinan en minutos y resuelven almuerzos y cenas de toda la semana.</g:description>
       <g:link>https://congeladosromasil.cl/filetillo-de-pollo-congelado.html</g:link>
       <g:image_link>https://congeladosromasil.cl/assets/pollo-filetillo-700g.webp</g:image_link>
@@ -15,11 +15,11 @@
       <g:condition>new</g:condition>
       <g:brand>Super Pollo</g:brand>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
-      <g:product_type>Pollo &gt; Filetillo de pollo</g:product_type>
+      <g:product_type>Pollo &gt; Filetito de pollo</g:product_type>
       <g:product_highlight>Formato: Bolsa 700 g</g:product_highlight>
       <g:product_highlight>Ideal para: Salteados, wraps, ensaladas, tacos y arroces</g:product_highlight>
       <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
-      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Filetillo (tiras de pechuga)</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Filetito (tiras de pechuga)</g:attribute_value></g:product_detail>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>700 g</g:attribute_value></g:product_detail>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bolsa</g:attribute_value></g:product_detail>
     </item>
@@ -50,7 +50,7 @@
       <g:link>https://congeladosromasil.cl/pechuga-de-pollo-deshuesada.html</g:link>
       <g:image_link>https://congeladosromasil.cl/assets/pollo-pechuga-750g.webp</g:image_link>
       <g:availability>in_stock</g:availability>
-      <g:price>5300 CLP</g:price>
+      <g:price>5290 CLP</g:price>
       <g:condition>new</g:condition>
       <g:brand>Super Pollo</g:brand>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Meat &gt; Fresh &amp; Frozen Meats</g:google_product_category>
@@ -207,6 +207,26 @@
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Presentación</g:attribute_name><g:attribute_value>Machas grandes en media concha</g:attribute_value></g:product_detail>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Unidades</g:attribute_name><g:attribute_value>12</g:attribute_value></g:product_detail>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Bandeja</g:attribute_value></g:product_detail>
+    </item>
+    <item>
+      <g:id>atun-steak</g:id>
+      <g:title>Atún steak premium congelado 230 g</g:title>
+      <g:description>Porciones de atún premium congelado, listas para preparar a la plancha, al horno o en sartén.</g:description>
+      <g:link>https://congeladosromasil.cl/atun-steak-congelado.html</g:link>
+      <g:image_link>https://congeladosromasil.cl/assets/product-atun-steak-v1.webp</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>2990 CLP</g:price>
+      <g:condition>new</g:condition>
+      <g:brand>Romasil</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
+      <g:product_type>Pescados &gt; Atún</g:product_type>
+      <g:product_highlight>Formato: Steak de 230 g, sellado al vacío</g:product_highlight>
+      <g:product_highlight>Ideal para: Plancha, horno, sartén y preparaciones selladas</g:product_highlight>
+      <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Steak</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>230 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Sellado al vacío</g:attribute_value></g:product_detail>
     </item>
   </channel>
 </rss>
