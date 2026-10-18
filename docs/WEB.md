@@ -82,7 +82,10 @@ La lista de productos sale siempre de las tarjetas de `productos.html`; los gene
 
 - código propio (`app.js`) y Google Analytics (`*.googletagmanager.com`);
 - estilos y tipografías propios;
-- conexiones a FormSubmit y Google Analytics.
+- conexiones a FormSubmit y Google Analytics;
+- envío de formularios a Transbank Webpay (`form-action`), para el pago (ver [WEBPAY.md](WEBPAY.md)).
+
+Las páginas de pago (`pagar.html`, `pago-resultado.html`, `admin-pago.html`) llevan `noindex`: `revisar-sitio.ps1` no les exige canonical y verifica que no estén en el sitemap.
 
 No se permite código en línea (`<script>` sin `src`, `onload=`, `onclick=`); `revisar-sitio.ps1` lo detecta. Los bloques `application/ld+json` no son código ejecutable y no se ven afectados.
 

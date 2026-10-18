@@ -4,20 +4,14 @@
 // Si esta función falla, app.js envía el pedido por FormSubmit como respaldo.
 // Necesita la variable de entorno RESEND_API_KEY en Vercel; la clave nunca va en el código.
 const CATALOG = require('./_catalogo.json');
+const { VENTAS, FROM_VENTAS, FROM_CLIENTE, WHATSAPP, SITE, money, escapeHtml, fechaChile, C, marco, enviarCorreo } = require('./_correo');
 
-const VENTAS = 'ventas@congeladosromasil.cl';
-const FROM_VENTAS = 'Pedidos web Romasil <ventas@congeladosromasil.cl>';
-const FROM_CLIENTE = 'Congelados Romasil <ventas@congeladosromasil.cl>';
-const WHATSAPP = '56962319733';
-const SITE = 'https://congeladosromasil.cl';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 const COMMUNES = ['Providencia', 'Ñuñoa', 'Las Condes'];
 
-const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
-const escapeHtml = text => String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const clean = (value, max) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 
 // Devuelve { errores: [...] } o { pedido } con los totales calculados en el servidor.
@@ -64,13 +58,7 @@ function numeroPedido(fecha = new Date()) {
   return `R${partes.month}${partes.day}-${partes.hour}${partes.minute}-${azar}`;
 }
 
-function fechaChile(fecha = new Date()) {
-  return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', dateStyle: 'long', timeStyle: 'short' }).format(fecha);
-}
-
 // ---------- Correos ----------
-const C = { navy: '#1E3A8A', ink: '#2A1F14', muted: '#5E5446', line: '#EFE3C8', cream: '#FFF4D6', yellow: '#FBBF24' };
-
 function tablaProductos(p) {
   const th = 'padding:10px 8px;font-size:13px;color:#ffffff;font-weight:bold;';
   const td = `padding:10px 8px;font-size:14px;color:${C.ink};border-bottom:1px solid ${C.line};`;
@@ -89,21 +77,14 @@ ${total('Total referencial', money.format(p.total), true)}
 </table>${p.porKilo ? `<p style="margin:8px 0 0;font-size:12px;color:${C.muted};">Los productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.</p>` : ''}`;
 }
 
-function marco(contenido) {
-  return `<!doctype html><html lang="es-CL"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:${C.cream};font-family:Arial,Helvetica,sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.cream};"><tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;">
-<tr><td style="padding:20px 24px;border-bottom:4px solid ${C.yellow};"><img src="${SITE}/assets/romasil-logo-horizontal.png" width="160" height="50" alt="Congelados Romasil" style="display:block;border:0;"></td></tr>
-<tr><td style="padding:24px;">${contenido}</td></tr>
-<tr><td style="padding:16px 24px;background:${C.cream};font-size:12px;line-height:1.5;color:${C.muted};">Congelados Romasil · González &amp; González Comercializadora de Alimentos SpA · Antonio Bellet 193, oficina 1210, Providencia · <a href="${SITE}/politica-de-privacidad.html" style="color:${C.navy};">Política de privacidad</a></td></tr>
-</table></td></tr></table></body></html>`;
-}
-
-function correoVentas(p, numero, fecha) {
+// base: dominio que atendió el pedido (en una vista previa de Vercel, el botón de pago apunta a esa misma vista previa).
+function correoVentas(p, numero, fecha, base = SITE) {
   const c = p.cliente;
   const dato = (label, value) => `<tr><td style="padding:4px 0;width:130px;font-size:14px;color:${C.muted};vertical-align:top;">${label}</td><td style="padding:4px 0;font-size:14px;color:${C.ink};">${value}</td></tr>`;
   const waCliente = `https://wa.me/${p.phoneDigits.length === 9 ? '56' + p.phoneDigits : p.phoneDigits}`;
+  // Abre admin-pago.html con los datos del pedido en el fragmento (#), que no llega al servidor. Ventas ajusta el total si cambia.
+  const detalle = [...p.lineas.map(l => `${l.quantity} × ${l.name}`), p.shipping ? 'despacho' : 'despacho gratis'].join(', ').slice(0, 200);
+  const linkPago = `${base}/admin-pago.html#${new URLSearchParams({ pedido: numero, nombre: c.name, email: c.email, telefono: c.phone, monto: String(p.total), detalle })}`;
   const html = marco(`<p style="margin:0 0 4px;font-size:13px;color:${C.muted};">Nuevo pedido desde congeladosromasil.cl</p>
 <h1 style="margin:0 0 20px;font-size:22px;color:${C.navy};">Pedido ${numero}</h1>
 <h2 style="margin:0 0 8px;font-size:15px;color:${C.ink};">Datos del cliente</h2>
@@ -116,7 +97,7 @@ ${dato('Comuna', escapeHtml(c.commune))}
 </table>
 <h2 style="margin:0 0 8px;font-size:15px;color:${C.ink};">Productos</h2>
 ${tablaProductos(p)}
-<p style="margin:24px 0 0;"><a href="${waCliente}" style="display:inline-block;background:${C.navy};color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir al cliente por WhatsApp</a></p>
+<p style="margin:24px 0 0;"><a href="${waCliente}" style="display:inline-block;background:${C.navy};color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir al cliente por WhatsApp</a> <a href="${escapeHtml(linkPago)}" style="display:inline-block;margin-top:8px;background:${C.yellow};color:${C.ink};text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Crear enlace de pago</a></p>
 <p style="margin:20px 0 0;font-size:12px;color:${C.muted};">Solicitud recibida el ${escapeHtml(fecha)}. El cliente aceptó la política de privacidad. Responde este correo para escribirle directamente.</p>`);
   const text = `Nuevo pedido ${numero} (${fecha})\n\nCliente: ${c.name}\nTeléfono: ${c.phone}\nCorreo: ${c.email}\nDirección: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}\nComuna: ${c.commune}\n\n` + textoProductos(p);
   return { from: FROM_VENTAS, to: [VENTAS], reply_to: c.email, subject: `Nuevo pedido ${numero} · ${c.name} · ${money.format(p.total)}`, html, text };
@@ -150,24 +131,6 @@ function textoProductos(p) {
     `\n\nSubtotal: ${money.format(p.subtotal)}\nDespacho: ${p.shipping === 0 ? 'Gratis' : money.format(p.shipping)}\nTotal referencial: ${money.format(p.total)}\n`;
 }
 
-async function enviarCorreo(apiKey, correo, idempotencia) {
-  const controller = new AbortController();
-  // 5 s por correo: los dos envíos caben en los 12 s que espera la web antes de pasar al respaldo.
-  const timer = setTimeout(() => controller.abort(), 5000);
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': idempotencia },
-      body: JSON.stringify(correo),
-      signal: controller.signal
-    });
-    if (!response.ok) throw new Error(`Resend respondió ${response.status}: ${(await response.text()).slice(0, 300)}`);
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') {
@@ -197,7 +160,7 @@ async function handler(req, res) {
   const ahora = new Date();
   const numero = numeroPedido(ahora);
   try {
-    await enviarCorreo(apiKey, correoVentas(pedido, numero, fechaChile(ahora)), `${numero}-ventas`);
+    await enviarCorreo(apiKey, correoVentas(pedido, numero, fechaChile(ahora), `https://${req.headers.host}`), `${numero}-ventas`);
   } catch (error) {
     console.error('No se pudo enviar el pedido a ventas', numero, error);
     return res.status(502).json({ ok: false, error: 'No pudimos registrar la solicitud por correo.' });

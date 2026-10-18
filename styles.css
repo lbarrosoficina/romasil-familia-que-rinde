@@ -248,6 +248,30 @@ dialog::backdrop{background:rgba(15,20,40,.55)}
 .error-card p:not(.eyebrow){color:var(--muted)}
 .error-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px}
 .error-secondary{background:var(--surface);color:var(--navy);border-color:var(--navy)}
+/* Pago con Webpay (pagar.html, pago-resultado.html, admin-pago.html) */
+.pago-card{background:var(--surface);border-radius:var(--radius-lg);padding:40px;width:100%;max-width:560px;box-shadow:var(--shadow);display:grid;gap:16px;align-content:start}
+.pago-card h1{font-size:36px;font-weight:900}
+.pago-card [hidden]{display:none!important}
+.pago-aviso{padding:12px 16px;border-radius:14px;background:var(--bg);font-weight:600}
+.pago-aviso:empty{display:none}
+.pago-aviso.ok{background:#DCFCE7;color:#14532D}
+.pago-aviso.error{background:#FDE2E2;color:#7F1D1D}
+.pago-resumen{margin:0;display:grid;gap:10px;padding:18px 20px;border:2px solid var(--line);border-radius:var(--radius)}
+.pago-resumen div{display:flex;justify-content:space-between;gap:16px}
+.pago-resumen dt{color:var(--muted)}
+.pago-resumen dd{margin:0;font-weight:700;text-align:right}
+.pago-resumen .pago-total{border-top:2px solid var(--line);padding-top:10px;align-items:baseline}
+.pago-total dd{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--navy)}
+.pago-nota{font-size:14px;color:var(--muted)}
+.pago-acciones{justify-content:flex-start;margin-top:0}
+.pago-acciones .button.whatsapp-button{width:auto;margin-top:0}
+.pago-form{display:grid;gap:14px}
+.pago-form label,label.pago-form{display:grid;gap:6px;font-weight:700;font-size:15px}
+.pago-form label span{font-weight:400;color:var(--muted)}
+.pago-form input,.pago-form textarea{font:inherit;min-height:50px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);font-weight:400}
+.pago-form input:focus-visible,.pago-form textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.pago-enlace{display:grid;gap:14px}
+@media (max-width:560px){.pago-card{padding:28px 20px}.pago-card h1{font-size:30px}}
 
 /* Responsivo */
 /* Menú con 6 enlaces (incluye Recetas): pasa a botón "Menú" bajo 1180 px y se aprieta un poco hasta 1320 px */
