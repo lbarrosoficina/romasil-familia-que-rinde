@@ -122,6 +122,7 @@ button{font:inherit;cursor:pointer}
 .contact-details{margin:0;display:grid;gap:14px;border-top:1px solid var(--line);padding-top:22px}
 .contact-details dt{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .contact-details dd{margin:2px 0 0;font-weight:700}
+.contact-details dd+dd{margin-top:6px}
 details{border-top:1px solid var(--line);padding:4px 0}
 details:last-of-type{border-bottom:1px solid var(--line)}
 summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;font-weight:800;font-size:17px;color:var(--navy);min-height:44px}
