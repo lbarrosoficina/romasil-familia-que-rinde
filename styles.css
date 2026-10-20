@@ -40,7 +40,7 @@ button{font:inherit;cursor:pointer}
 #primaryNav a{text-decoration:none;padding:8px 0;border-bottom:3px solid transparent}
 #primaryNav a:hover,#primaryNav a[aria-current="page"]{border-color:var(--accent)}
 .header-actions{display:flex;gap:10px;align-items:center}
-.cart-button{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 18px;border:0;border-radius:var(--pill);background:var(--navy);color:#fff;font-weight:800;font-size:16px}
+.cart-button{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 18px;border:0;border-radius:var(--pill);background:var(--navy);color:#fff;font-weight:800;font-size:16px;white-space:nowrap}
 .cart-count{min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-size:14px}
 .wa-link{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 16px;border-radius:var(--pill);border:2px solid var(--green);color:var(--green);font-weight:800;text-decoration:none}
 .nav-toggle{display:none;align-items:center;gap:8px;min-height:48px;padding:8px 14px;border:2px solid var(--line);border-radius:var(--pill);background:var(--surface);color:var(--navy);font-weight:800}
@@ -256,9 +256,9 @@ dialog::backdrop{background:rgba(15,20,40,.55)}
 .error-secondary{background:var(--surface);color:var(--navy);border-color:var(--navy)}
 
 /* Responsivo */
-/* Menú con 6 enlaces (incluye Recetas): pasa a botón "Menú" bajo 1180 px y se aprieta un poco hasta 1320 px */
-@media (min-width:1181px) and (max-width:1320px){#primaryNav{gap:20px}}
-@media (max-width:1180px){
+/* Menú con 5 enlaces: pasa a botón "Menú" bajo 1140 px y se aprieta un poco hasta 1180 px (el encabezado flotante del inicio es el más justo) */
+@media (min-width:1141px) and (max-width:1180px){#primaryNav{gap:20px}}
+@media (max-width:1140px){
   .nav-toggle{display:inline-flex}
   .topbar .wrap{flex-wrap:wrap;gap:12px;min-height:72px}
   .brand img{height:46px}
