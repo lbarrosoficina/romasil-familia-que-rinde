@@ -82,6 +82,12 @@ button{font:inherit;cursor:pointer}
 .product-footer strong{font-family:var(--font-display);font-size:26px;font-weight:900;color:var(--ink)}
 .add-button{min-height:46px;padding:10px 20px;border:0;border-radius:var(--pill);background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:15px}
 .add-button:hover{filter:brightness(1.05)}
+.product-footer:has(.card-buy){flex-wrap:wrap}
+.card-buy{display:flex;align-items:center;gap:10px;margin-left:auto}
+.card-quantity{margin-top:0;gap:4px}
+.card-quantity button{width:36px;height:36px;font-size:17px;line-height:1;padding:0}
+.card-quantity input{width:42px;height:36px;border:0;background:none;text-align:center;font-weight:800;font-size:16px;color:var(--ink);-moz-appearance:textfield;appearance:textfield}
+.card-quantity input::-webkit-outer-spin-button,.card-quantity input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .soon-badge{display:inline-flex;align-items:center;min-height:46px;padding:10px 20px;border-radius:var(--pill);background:var(--cream-2);color:var(--orange-text);font-weight:800;font-size:15px;margin-left:auto}
 
 /* Pasos */

@@ -222,6 +222,29 @@ function renderCart() {
   }).join('');
 }
 
+// Selector de cantidad junto a cada botón "Agregar"; se arma aquí para no repetirlo en todas las páginas generadas.
+function readCardQuantity(input) {
+  const value = Math.floor(Number(input.value));
+  return Number.isFinite(value) ? Math.min(Math.max(value, 1), MAX_QUANTITY) : 1;
+}
+document.querySelectorAll('.product-card[data-available="true"] .add-button').forEach(button => {
+  const name = button.closest('.product-card').querySelector('h3, h1')?.textContent.trim() || 'producto';
+  const picker = document.createElement('div');
+  picker.className = 'quantity card-quantity';
+  picker.innerHTML = `<button type="button" data-step="-1" aria-label="Una unidad menos de ${escapeHtml(name)}">−</button><input type="number" inputmode="numeric" min="1" max="${MAX_QUANTITY}" value="1" aria-label="Cantidad de ${escapeHtml(name)}"><button type="button" data-step="1" aria-label="Una unidad más de ${escapeHtml(name)}">+</button>`;
+  const input = picker.querySelector('input');
+  picker.addEventListener('click', event => {
+    const step = event.target.closest('button[data-step]');
+    if (step) input.value = Math.min(Math.max(readCardQuantity(input) + Number(step.dataset.step), 1), MAX_QUANTITY);
+  });
+  input.addEventListener('change', () => { input.value = readCardQuantity(input); });
+  input.addEventListener('keydown', event => { if (event.key === 'Enter') button.click(); });
+  const group = document.createElement('div');
+  group.className = 'card-buy';
+  button.replaceWith(group);
+  group.append(picker, button);
+});
+
 document.querySelectorAll('.product-card[data-available="true"] .add-button').forEach(button => button.addEventListener('click', () => {
   const card = button.closest('.product-card');
   const id = card.dataset.id;
@@ -230,13 +253,22 @@ document.querySelectorAll('.product-card[data-available="true"] .add-button').fo
     showToast('Este producto no se puede agregar en este momento. Escríbenos por WhatsApp.');
     return;
   }
+  const input = card.querySelector('.card-quantity input');
+  const requested = input ? readCardQuantity(input) : 1;
   const existing = cart.get(id);
-  const line = cartLine(id, Math.min((existing?.quantity || 0) + 1, MAX_QUANTITY));
+  const previous = existing?.quantity || 0;
+  const line = cartLine(id, Math.min(previous + requested, MAX_QUANTITY));
+  const added = line.quantity - previous;
+  if (added <= 0) {
+    showToast(`Ya tienes el máximo de ${MAX_QUANTITY} unidades de ${line.name}`);
+    return;
+  }
   cart.set(id, line);
   persistCart();
   renderCart();
-  showToast(`${line.name} agregado`);
-  track('add_to_cart', { currency: 'CLP', value: line.price, items: [{ item_id: id, item_name: line.name, price: line.price, quantity: 1 }] });
+  if (input) input.value = 1;
+  showToast(added === 1 ? `${line.name} agregado` : `${added} × ${line.name} agregados`);
+  track('add_to_cart', { currency: 'CLP', value: line.price * added, items: [{ item_id: id, item_name: line.name, price: line.price, quantity: added }] });
 }));
 // Aviso para quien mantiene la web: un precio de la página distinto al de CATALOG indica que falta volver a generar.
 document.querySelectorAll('.product-card[data-available="true"]').forEach(card => {
