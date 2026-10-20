@@ -32,7 +32,7 @@ function showConsentBanner() {
   banner.className = 'consent-banner';
   banner.setAttribute('role', 'region');
   banner.setAttribute('aria-label', 'Preferencias de cookies');
-  banner.innerHTML = '<p>Usamos Google Analytics para saber cómo se usa la web y mejorarla. Solo se activa si lo aceptas. <a href="politica-de-privacidad.html#cookies">Ver política de cookies</a></p><div class="consent-actions"><button type="button" class="button secondary" data-consent="denied">Rechazar</button><button type="button" class="button primary" data-consent="granted">Aceptar</button></div>';
+  banner.innerHTML = '<p>Usamos Google Analytics para mejorar la web, solo si lo aceptas. <a href="politica-de-privacidad.html#cookies">Más información</a></p><div class="consent-actions"><button type="button" class="button secondary" data-consent="denied">Rechazar</button><button type="button" class="button primary" data-consent="granted">Aceptar</button></div>';
   banner.addEventListener('click', event => {
     const choice = event.target.closest('[data-consent]')?.dataset.consent;
     if (!choice) return;
@@ -70,12 +70,12 @@ const CATALOG = {
   'trutro-largo-pollo': { name: 'Trutro largo de pollo congelado', price: 3300, pricedByKilo: false },
   'pechuga-pollo': { name: 'Pechuga deshuesada de pollo', price: 5290, pricedByKilo: false },
   'malaya-cerdo': { name: 'Malaya de cerdo', price: 13000, pricedByKilo: false },
-  'salmon-nacional': { name: 'Salmón nacional filete', price: 7950, pricedByKilo: false },
   'camaron-ecuatoriano': { name: 'Camarón ecuatoriano con cáscara 36/40', price: 10350, pricedByKilo: false },
   'camaron-sin-cascara': { name: 'Camarón ecuatoriano sin cáscara 36/40', price: 11600, pricedByKilo: false },
-  'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
   'ostion-sin-coral': { name: 'Ostión sin coral 20/40', price: 11900, pricedByKilo: false },
+  'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
   'machas-media-concha': { name: 'Machas en media concha congeladas', price: 7900, pricedByKilo: false },
+  'salmon-nacional': { name: 'Salmón nacional filete', price: 7950, pricedByKilo: false },
   'atun-steak': { name: 'Atún steak premium', price: 2990, pricedByKilo: false }
 };
 // </catalogo>
@@ -108,6 +108,9 @@ const cartTotal = document.querySelector('#cartTotal');
 const cartShipping = document.querySelector('#cartShipping');
 const cartGrandTotal = document.querySelector('#cartGrandTotal');
 const cartShippingNote = document.querySelector('#cartShippingNote');
+const shipProgress = document.querySelector('#shipProgress');
+const shipProgressText = document.querySelector('#shipProgressText');
+const shipProgressBar = document.querySelector('#shipProgressBar');
 const toast = document.querySelector('#toast');
 const checkoutDialog = document.querySelector('#checkoutDialog');
 const openCartButton = document.querySelector('#openCart');
@@ -201,12 +204,12 @@ function renderCart() {
   const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
-  const shippingNote = shipping === 0
-    ? 'Despacho gratis desde $50.000 en productos.'
-    : `Despacho gratis desde $50.000 en productos. Te faltan ${money.format(FREE_SHIPPING_THRESHOLD - total)}.`;
-  cartShippingNote.textContent = items.some(item => item.pricedByKilo)
-    ? `${shippingNote} Los productos por kg se estiman con 1 kg por unidad; el total y el despacho final se confirman según el peso real.`
-    : shippingNote;
+  renderShippingProgress(total);
+  const hasKiloItems = items.some(item => item.pricedByKilo);
+  cartShippingNote.hidden = !hasKiloItems;
+  cartShippingNote.textContent = hasKiloItems
+    ? 'Los productos por kg se estiman con 1 kg por unidad; el total y el despacho final se confirman según el peso real.'
+    : '';
   if (!items.length) {
     cartItems.innerHTML = '<div class="empty-cart"><svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M4.9 6l14.2 12M19.1 6 4.9 18M9 3.5l3 2.5 3-2.5M9 20.5l3-2.5 3 2.5"/></svg><h3>Tu pedido está vacío</h3><p>Agrega productos del catálogo para comenzar.</p></div>';
     return;
@@ -221,6 +224,49 @@ function renderCart() {
     </div>`;
   }).join('');
 }
+
+// Barra "te faltan $X para el despacho gratis" en el resumen del carrito.
+function renderShippingProgress(total) {
+  if (!shipProgress) return;
+  const reached = total >= FREE_SHIPPING_THRESHOLD;
+  const percent = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  shipProgress.classList.toggle('is-free', reached);
+  shipProgressText.innerHTML = reached
+    ? '<strong>¡Tienes despacho gratis!</strong>'
+    : `Te faltan <strong>${money.format(FREE_SHIPPING_THRESHOLD - total)}</strong> para el despacho gratis`;
+  shipProgressBar.style.width = `${percent}%`;
+  shipProgressBar.parentElement.setAttribute('aria-valuenow', String(percent));
+}
+
+// Precio por kilo bajo el precio de cada tarjeta, como dato para comparar.
+// Las bandejas de media concha (ostiones y machas) no lo llevan: se venden por unidades, no por peso.
+// El precio sale siempre de la tarjeta (data-price); aquí solo va el peso de cada formato.
+// Si cambia el formato de un producto (por ejemplo, de 700 g a 1 kg), actualizarlo aquí.
+const PACK_SIZE = {
+  'filetillo-pollo': { kg: 0.7 },
+  'trutro-largo-pollo': { kg: 0.8 },
+  'pechuga-pollo': { kg: 0.75 },
+  'malaya-cerdo': { kg: 0.9 },
+  'salmon-nacional': { kg: 0.5 },
+  'camaron-ecuatoriano': { kg: 1 },
+  'camaron-sin-cascara': { kg: 1 },
+  'ostion-sin-coral': { kg: 1 },
+  'atun-steak': { kg: 0.23 }
+};
+document.querySelectorAll('.product-card[data-available="true"][data-id]').forEach(card => {
+  const size = PACK_SIZE[card.dataset.id];
+  const price = Number(card.dataset.price);
+  const priceElement = card.querySelector('.product-footer > strong');
+  if (!size || !price || !priceElement) return;
+  const text = `${money.format(Math.round(price / size.kg))}/kg`;
+  const stack = document.createElement('div');
+  stack.className = 'price-stack';
+  priceElement.replaceWith(stack);
+  const unitPrice = document.createElement('span');
+  unitPrice.className = 'unit-price';
+  unitPrice.textContent = text;
+  stack.append(priceElement, unitPrice);
+});
 
 // Selector de cantidad junto a cada botón "Agregar"; se arma aquí para no repetirlo en todas las páginas generadas.
 function readCardQuantity(input) {
@@ -351,25 +397,6 @@ function buildOrderSummary(data, orderNumber = '') {
   return `Hola, quiero solicitar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}`;
 }
 
-// Botón "Enviar pedido por WhatsApp": valida los datos y abre WhatsApp con el cliente y el pedido completos.
-const whatsappOrderButton = checkoutForm.querySelector('.whatsapp-button');
-whatsappOrderButton?.addEventListener('click', () => {
-  if (!cart.size) {
-    formStatus.textContent = 'Tu pedido está vacío. Agrega al menos un producto antes de enviarlo.';
-    return;
-  }
-  if (!checkoutForm.reportValidity()) {
-    formStatus.textContent = 'Completa tus datos para enviar el pedido por WhatsApp.';
-    return;
-  }
-  const summary = buildOrderSummary(new FormData(checkoutForm));
-  track('generate_lead', cartEventParams({ lead_source: 'whatsapp_pedido' }));
-  const waWindow = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`, '_blank');
-  if (waWindow) waWindow.opener = null;
-  else window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`);
-  formStatus.textContent = 'Abrimos WhatsApp con tu pedido. Solo falta presionar Enviar en WhatsApp.';
-});
-
 // Cerrar el formulario al hacer clic en la zona oscura alrededor.
 checkoutDialog.addEventListener('click', event => {
   if (event.target === checkoutDialog) checkoutDialog.close();
@@ -388,7 +415,7 @@ checkoutForm.addEventListener('submit', async event => {
   formStatus.textContent = 'Registrando tu solicitud de forma segura…';
   const resetButton = () => {
     submitButton.disabled = false;
-    submitButton.textContent = 'Enviar solicitud';
+    submitButton.textContent = 'Enviar pedido';
   };
 
   // 1. Envío principal: función propia con Resend (aviso a ventas@ y confirmación al cliente).
@@ -414,7 +441,9 @@ checkoutForm.addEventListener('submit', async event => {
       channel = 'formsubmit';
     } catch (error) {
       console.error('No fue posible registrar la solicitud', error);
-      formStatus.textContent = 'No pudimos registrar la solicitud por correo. Puedes reintentar o continuar directamente por WhatsApp con el botón disponible en este formulario.';
+      // Si fallan los dos envíos por correo, se ofrece enviar el mismo pedido por WhatsApp.
+      const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildOrderSummary(data))}`;
+      formStatus.innerHTML = `No pudimos registrar el pedido por correo. Reintenta o <a href="${waUrl}" target="_blank" rel="noopener">envíalo por WhatsApp</a>.`;
       resetButton();
       return;
     }

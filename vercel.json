@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/reineta-nacional-congelada.html", "destination": "/pescados-congelados.html", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",

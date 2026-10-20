@@ -52,6 +52,11 @@ Un solo comando deja todo el sitio al día: `05 Scripts/web/actualizar-web.ps1`.
 
 Termina con `OK` o con la lista de problemas. `actualizar-web.ps1 -SoloVerificar` revisa sin modificar nada, y `revisar-sitio.ps1` se puede ejecutar por separado.
 
+## Precio por kilo y productos ocultos
+
+- Bajo el precio de cada tarjeta, `app.js` muestra el precio por kilo como dato de comparación. Las bandejas de media concha (ostiones y machas) no lo llevan. Se calcula con el precio de la tarjeta y el peso de cada formato, que está en `PACK_SIZE` de `app.js`. Si cambia el formato de un producto, actualizar ahí su peso.
+- Un producto se oculta dejando su tarjeta de `productos.html` con `data-available="false" hidden` (como el chorito y la reineta). Los generadores no crean su ficha ni lo muestran en su categoría. Para volver a mostrarlo, dejarlo en `data-available="soon"` (o con precio y `"true"`), agregarlo de nuevo a su categoría en `build-categorias.ps1` y al sitemap, y quitar la redirección temporal de `vercel.json`.
+
 ## Imágenes y tipografías
 
 - Las tipografías (Baloo 2 y Poppins, licencia OFL) están en `assets/fonts` y se declaran al inicio de `styles.css`, solo con el subconjunto latin, que cubre el español. No se carga nada desde Google Fonts.
