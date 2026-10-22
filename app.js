@@ -129,6 +129,8 @@ const ORDER_API_TIMEOUT_MS = 12000;
 const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil.cl';
 const WEBPAY_API_ENDPOINT = '/api/webpay-crear';
 const WEBPAY_API_TIMEOUT_MS = 12000;
+const CARD_SURCHARGE_RATE = 0.03;
+const PAYMENT_RECEIPT_EMAIL = 'pagos@congeladosromasil.cl';
 
 function setPageRegionsInert(isInert) {
   pageRegions.forEach(region => { region.inert = isInert; });
@@ -371,6 +373,7 @@ document.addEventListener('keydown', event => {
 document.querySelector('#checkoutButton').addEventListener('click', () => {
   closeCart({ restoreFocus: false });
   track('begin_checkout', cartEventParams());
+  updatePaymentChoice();
   checkoutDialog.showModal();
   checkoutForm.elements.name.focus();
 });
@@ -386,17 +389,52 @@ function cartEventParams(extra = {}) {
     ...extra
   };
 }
+function cartTotals(paymentMethod = '') {
+  const products = [...cart.values()].reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = products >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const baseTotal = products + shipping;
+  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  return { products, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
+}
+function updatePaymentChoice() {
+  const paymentMethod = checkoutForm.elements.paymentMethod?.value || '';
+  const totals = cartTotals(paymentMethod);
+  const transferPanel = document.querySelector('#transferPanel');
+  const cardPanel = document.querySelector('#cardPanel');
+  const totalPanel = document.querySelector('#checkoutTotal');
+  const surchargeRow = document.querySelector('#cardSurchargeRow');
+  const submitButton = checkoutForm.querySelector('button[type="submit"]');
+  transferPanel.hidden = paymentMethod !== 'transfer';
+  cardPanel.hidden = paymentMethod !== 'card';
+  totalPanel.hidden = !paymentMethod;
+  surchargeRow.hidden = paymentMethod !== 'card';
+  document.querySelector('#checkoutBaseTotal').textContent = money.format(totals.baseTotal);
+  document.querySelector('#cardSurcharge').textContent = money.format(totals.surcharge);
+  document.querySelector('#checkoutGrandTotal').textContent = money.format(totals.total);
+  submitButton.classList.toggle('is-webpay', paymentMethod === 'card');
+  submitButton.textContent = paymentMethod === 'transfer' ? 'Registrar pedido por transferencia' : paymentMethod === 'card' ? 'Pagar con Webpay' : 'Continuar';
+  document.querySelector('#paymentNote').textContent = paymentMethod === 'transfer'
+    ? `Después de transferir, envía el comprobante a ${PAYMENT_RECEIPT_EMAIL} o por WhatsApp.`
+    : paymentMethod === 'card'
+      ? 'Serás dirigido al sitio seguro de Transbank.'
+      : 'Selecciona un medio de pago para continuar.';
+}
+checkoutForm.addEventListener('change', event => {
+  if (event.target.name === 'paymentMethod') updatePaymentChoice();
+});
 function buildOrderSummary(data, orderNumber = '') {
   const cartItemsList = [...cart.values()];
   const items = cartItemsList.map(item => `${item.quantity} × ${item.name}${item.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n');
-  const total = cartItemsList.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const shippingLabel = shipping === 0 ? 'Gratis' : money.format(shipping);
+  const paymentMethod = String(data.get('paymentMethod') || '');
+  const totals = cartTotals(paymentMethod);
+  const shippingLabel = totals.shipping === 0 ? 'Gratis' : money.format(totals.shipping);
+  const paymentLabel = paymentMethod === 'card' ? 'Tarjeta mediante Webpay' : 'Transferencia bancaria';
+  const surchargeLine = totals.surcharge ? `\nRecargo tarjeta (3%): ${money.format(totals.surcharge)}` : '';
   const addressLine2 = String(data.get('addressLine2') || '').trim();
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
   const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
   const orderLine = orderNumber ? `\nN° de solicitud: ${orderNumber}` : '';
-  return `Hola, quiero registrar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal a pagar: ${money.format(total + shipping)}${weightNote}`;
+  return `Hola, quiero registrar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\nMedio de pago: ${paymentLabel}\n\nProductos:\n${items}\n\nSubtotal: ${money.format(totals.products)}\nDespacho: ${shippingLabel}${surchargeLine}\nTotal a pagar: ${money.format(totals.total)}${weightNote}`;
 }
 
 // Cerrar el formulario al hacer clic en la zona oscura alrededor.
@@ -412,26 +450,29 @@ checkoutForm.addEventListener('submit', async event => {
 
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   const data = new FormData(checkoutForm);
+  const paymentMethod = String(data.get('paymentMethod') || '');
   submitButton.disabled = true;
-  submitButton.textContent = 'Conectando con Webpay…';
-  formStatus.textContent = 'Preparando tu pago de forma segura…';
+  submitButton.textContent = paymentMethod === 'card' ? 'Conectando con Webpay…' : 'Registrando pedido…';
+  formStatus.textContent = paymentMethod === 'card' ? 'Preparando tu pago de forma segura…' : 'Registrando tus datos para la transferencia…';
   const resetButton = () => {
     submitButton.disabled = false;
-    submitButton.textContent = 'Pagar con Webpay';
+    updatePaymentChoice();
   };
 
-  let payment;
-  try {
-    payment = await createWebpayTransaction();
-  } catch (error) {
-    console.error('No fue posible iniciar Webpay', error);
-    formStatus.textContent = error.message || 'No pudimos conectar con Webpay. Intenta nuevamente.';
-    resetButton();
-    return;
+  let payment = null;
+  if (paymentMethod === 'card') {
+    try {
+      payment = await createWebpayTransaction();
+    } catch (error) {
+      console.error('No fue posible iniciar Webpay', error);
+      formStatus.textContent = error.message || 'No pudimos conectar con Webpay. Intenta nuevamente.';
+      resetButton();
+      return;
+    }
   }
 
-  // Registramos el pedido antes de salir a Webpay para poder relacionar el pago con los datos de entrega.
-  let orderNumber = payment.orderNumber;
+  // Para tarjeta se relaciona el pedido con la orden de Webpay; para transferencia el servidor genera el número.
+  let orderNumber = payment?.orderNumber || '';
   let channel = '';
   try {
     const result = await sendOrderByResend(data, orderNumber);
@@ -461,7 +502,15 @@ checkoutForm.addEventListener('submit', async event => {
   }
 
   track('generate_lead', cartEventParams({ lead_source: 'formulario_pedido', order_channel: channel }));
-  track('add_payment_info', cartEventParams({ payment_type: 'Webpay' }));
+  track('add_payment_info', cartEventParams({ payment_type: paymentMethod === 'card' ? 'Webpay' : 'Transferencia' }));
+  if (paymentMethod === 'transfer') {
+    const orderReference = orderNumber ? ` de mi pedido ${orderNumber}` : ' de mi pedido';
+    const registeredMessage = orderNumber ? `Pedido <strong>${escapeHtml(orderNumber)}</strong> registrado.` : 'Pedido registrado.';
+    const whatsappText = encodeURIComponent(`Hola, adjunto el comprobante de transferencia${orderReference} en Congelados Romasil.`);
+    formStatus.innerHTML = `${registeredMessage} Realiza la transferencia con los datos indicados y envía el comprobante a <a href="mailto:${PAYMENT_RECEIPT_EMAIL}">${PAYMENT_RECEIPT_EMAIL}</a> o por <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}" target="_blank" rel="noopener">WhatsApp</a>.`;
+    submitButton.textContent = 'Pedido registrado';
+    return;
+  }
   formStatus.textContent = 'Abriendo Webpay…';
   postToWebpay(payment);
 });
@@ -483,6 +532,7 @@ async function sendOrderByResend(data, orderNumber) {
         addressLine1: data.get('addressLine1'),
         addressLine2: String(data.get('addressLine2') || '').trim(),
         commune: data.get('commune'),
+        paymentMethod: data.get('paymentMethod'),
         privacyConsent: data.get('privacyConsent') === 'Aceptado',
         orderNumber,
         items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity }))
@@ -505,7 +555,7 @@ async function createWebpayTransaction() {
     const response = await fetch(WEBPAY_API_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity })) }),
+      body: JSON.stringify({ paymentMethod: 'card', items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity })) }),
       signal: controller.signal
     });
     const result = await response.json().catch(() => null);

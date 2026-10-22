@@ -25,9 +25,13 @@ Antes de publicar, revisar los cambios localmente, agruparlos en un solo lote y 
 
 No guardar contraseñas, códigos de verificación, claves API, tokens ni credenciales en el repositorio.
 
+## Medios de pago
+
+El checkout permite elegir transferencia bancaria o tarjeta. Para transferencia muestra los datos de la cuenta corriente y los canales para enviar el comprobante. Para tarjeta informa y calcula un recargo del 3 % sobre productos más despacho, y luego continúa por Transbank Webpay Plus.
+
 ## Pago con Transbank Webpay Plus
 
-El checkout recalcula el total en el servidor, crea la transacción y confirma el resultado directamente con Transbank. Para probarlo en un despliegue Preview de Vercel, configurar:
+El checkout recalcula en el servidor el total y el recargo del 3 %, crea la transacción y confirma el resultado directamente con Transbank. Para probarlo en un despliegue Preview de Vercel, configurar:
 
 - `TRANSBANK_ENVIRONMENT=integration`
 - `TRANSBANK_COMMERCE_CODE` y `TRANSBANK_API_KEY` con las credenciales oficiales de integración, almacenadas fuera del repositorio

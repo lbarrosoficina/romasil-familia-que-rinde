@@ -12,6 +12,7 @@ const WHATSAPP = '56962319733';
 const SITE = 'https://congeladosromasil.cl';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
+const CARD_SURCHARGE_RATE = 0.03;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 const COMMUNES = ['Providencia', 'Ñuñoa', 'Las Condes'];
@@ -39,6 +40,8 @@ function validarPedido(body) {
   if (cliente.addressLine1.length < 3) errores.push('Ingresa tu calle y número.');
   if (!COMMUNES.includes(cliente.commune)) errores.push('Selecciona una comuna con despacho.');
   if (body.privacyConsent !== true) errores.push('Debes aceptar la política de privacidad.');
+  const paymentMethod = clean(body.paymentMethod, 20);
+  if (!['transfer', 'card'].includes(paymentMethod)) errores.push('Selecciona un medio de pago válido.');
 
   const cantidades = new Map();
   const items = Array.isArray(body.items) ? body.items.slice(0, MAX_LINES) : [];
@@ -54,7 +57,9 @@ function validarPedido(body) {
   const lineas = [...cantidades].map(([id, quantity]) => ({ id, quantity, ...CATALOG[id], subtotal: CATALOG[id].price * quantity }));
   const subtotal = lineas.reduce((sum, line) => sum + line.subtotal, 0);
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  return { pedido: { cliente, phoneDigits, lineas, subtotal, shipping, total: subtotal + shipping, porKilo: lineas.some(line => line.pricedByKilo) } };
+  const baseTotal = subtotal + shipping;
+  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  return { pedido: { cliente, phoneDigits, lineas, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge, paymentMethod, porKilo: lineas.some(line => line.pricedByKilo) } };
 }
 
 // Número de pedido legible: R + fecha y hora de Santiago + 3 letras al azar (ej. R1014-1542-K7Q).
@@ -86,6 +91,7 @@ function tablaProductos(p) {
 ${filas}
 ${total('Subtotal de productos', money.format(p.subtotal))}
 ${total('Despacho', p.shipping === 0 ? 'Gratis' : money.format(p.shipping))}
+${p.surcharge ? total('Recargo tarjeta (3%)', money.format(p.surcharge)) : ''}
 ${total('Total a pagar', money.format(p.total), true)}
 </table>${p.porKilo ? `<p style="margin:8px 0 0;font-size:12px;color:${C.muted};">Los productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.</p>` : ''}`;
 }
@@ -114,6 +120,7 @@ ${dato('Teléfono', `<a href="tel:+${escapeHtml(p.phoneDigits)}" style="color:${
 ${dato('Correo', `<a href="mailto:${escapeHtml(c.email)}" style="color:${C.navy};">${escapeHtml(c.email)}</a>`)}
 ${dato('Dirección', escapeHtml(c.addressLine1) + (c.addressLine2 ? ', ' + escapeHtml(c.addressLine2) : ''))}
 ${dato('Comuna', escapeHtml(c.commune))}
+${dato('Medio de pago', p.paymentMethod === 'card' ? 'Tarjeta mediante Webpay' : 'Transferencia bancaria')}
 </table>
 <h2 style="margin:0 0 8px;font-size:15px;color:${C.ink};">Productos</h2>
 ${tablaProductos(p)}
@@ -133,22 +140,27 @@ ${tablaProductos(p)}
 <p style="margin:16px 0 24px;font-size:14px;color:${C.ink};"><strong>Despacho a:</strong> ${escapeHtml(c.addressLine1)}${c.addressLine2 ? ', ' + escapeHtml(c.addressLine2) : ''}, ${escapeHtml(c.commune)}</p>
 <h2 style="margin:0 0 8px;font-size:16px;color:${C.navy};">¿Qué sigue?</h2>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-${paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank.')}
-${paso(2, 'Coordinamos la entrega', 'Cuando el pago sea autorizado, te contactaremos para confirmar la fecha y franja de despacho.')}
+${p.paymentMethod === 'card'
+    ? paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank. El total incluye el recargo informado del 3%.')
+    : paso(1, 'Realiza la transferencia', 'Transfiere a la cuenta indicada en la web y envía el comprobante a pagos@congeladosromasil.cl o por WhatsApp.')}
+${paso(2, 'Coordinamos la entrega', p.paymentMethod === 'card' ? 'Cuando el pago sea autorizado, te contactaremos para confirmar la fecha y franja de despacho.' : 'Cuando confirmemos la transferencia, te contactaremos para confirmar la fecha y franja de despacho.')}
 ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
 </table>
-<p style="margin:0 0 20px;padding:12px 16px;background:${C.cream};border-radius:12px;font-size:13px;line-height:1.5;color:${C.ink};">Este correo confirma que registramos el pedido, pero no confirma el pago. Webpay mostrará el resultado de la transacción y te avisaremos cuando el pago quede autorizado.</p>
+<p style="margin:0 0 20px;padding:12px 16px;background:${C.cream};border-radius:12px;font-size:13px;line-height:1.5;color:${C.ink};">Este correo confirma que registramos el pedido, pero no confirma el pago. ${p.paymentMethod === 'card' ? 'Webpay mostrará el resultado de la transacción y te avisaremos cuando el pago quede autorizado.' : 'Confirmaremos el pedido cuando recibamos y validemos el comprobante de transferencia.'}</p>
 <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${C.ink};">¿Dudas o quieres cambiar algo? Responde este correo o escríbenos por WhatsApp. Atendemos de lunes a domingo, de 08:00 a 20:00.</p>
 <p style="margin:0 0 20px;"><a href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, tengo una consulta sobre mi pedido ' + numero)}" style="display:inline-block;background:#15803D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir por WhatsApp</a></p>
 <p style="margin:0;font-size:14px;color:${C.ink};">Un abrazo,<br><strong>Equipo Congelados Romasil</strong></p>`);
+  const paymentStep = p.paymentMethod === 'card'
+    ? '1. Pagas con Webpay en el sitio seguro de Transbank. El total incluye el recargo informado del 3%.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.'
+    : '1. Realiza la transferencia a la cuenta indicada en la web.\n2. Envía el comprobante a pagos@congeladosromasil.cl o por WhatsApp y coordinaremos la entrega cuando lo validemos.';
   const text = `¡Gracias por tu pedido, ${nombre}!\n\nRecibimos tu solicitud ${numero} y ya la estamos revisando.\n\n` + textoProductos(p) +
-    `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\n\n¿Qué sigue?\n1. Pagas con Webpay en el sitio seguro de Transbank.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo confirma el registro del pedido, no el resultado del pago.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;
+    `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\nMedio de pago: ${p.paymentMethod === 'card' ? 'Tarjeta mediante Webpay' : 'Transferencia bancaria'}\n\n¿Qué sigue?\n${paymentStep}\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo confirma el registro del pedido, no el resultado del pago.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;
   return { from: FROM_CLIENTE, to: [c.email], reply_to: VENTAS, subject: `Registramos tu pedido ${numero} – Congelados Romasil`, html, text };
 }
 
 function textoProductos(p) {
   return p.lineas.map(l => `${l.quantity} × ${l.name} — ${money.format(l.subtotal)}${l.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n') +
-    `\n\nSubtotal: ${money.format(p.subtotal)}\nDespacho: ${p.shipping === 0 ? 'Gratis' : money.format(p.shipping)}\nTotal a pagar: ${money.format(p.total)}\n`;
+    `\n\nSubtotal: ${money.format(p.subtotal)}\nDespacho: ${p.shipping === 0 ? 'Gratis' : money.format(p.shipping)}${p.surcharge ? `\nRecargo tarjeta (3%): ${money.format(p.surcharge)}` : ''}\nTotal a pagar: ${money.format(p.total)}\n`;
 }
 
 async function enviarCorreo(apiKey, correo, idempotencia) {

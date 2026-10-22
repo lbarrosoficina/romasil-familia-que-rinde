@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { calculateOrder, getPublicOrigin, getWebpayConfig, isValidToken } = require('../api/_webpay');
 const createPayment = require('../api/webpay-crear');
 const paymentReturn = require('../api/webpay-retorno');
+const { validarPedido } = require('../api/pedido');
 
 test('recalcula precios y despacho desde el catálogo del servidor', () => {
   const order = calculateOrder([
@@ -23,6 +24,27 @@ test('aplica despacho gratis y consolida líneas repetidas', () => {
   assert.equal(order.products[0].quantity, 4);
   assert.equal(order.total, 52000);
   assert.equal(order.shipping, 0);
+});
+
+test('calcula en el servidor el recargo de 3% para tarjeta', () => {
+  const order = calculateOrder([{ id: 'filetillo-pollo', quantity: 1 }], { cardSurcharge: true });
+  assert.equal(order.baseTotal, 9200);
+  assert.equal(order.surcharge, 276);
+  assert.equal(order.total, 9476);
+});
+
+test('el pedido distingue transferencia y tarjeta al calcular el total', () => {
+  const base = {
+    name: 'Cliente Prueba', phone: '+56 9 1234 5678', email: 'cliente@example.cl',
+    addressLine1: 'Av. Providencia 123', commune: 'Providencia', privacyConsent: true,
+    items: [{ id: 'filetillo-pollo', quantity: 1 }]
+  };
+  const transfer = validarPedido({ ...base, paymentMethod: 'transfer' }).pedido;
+  const card = validarPedido({ ...base, paymentMethod: 'card' }).pedido;
+  assert.equal(transfer.total, 9200);
+  assert.equal(transfer.surcharge, 0);
+  assert.equal(card.total, 9476);
+  assert.equal(card.surcharge, 276);
 });
 
 test('descarta productos y cantidades manipuladas', () => {
@@ -69,7 +91,7 @@ test('el endpoint crea la transacción con el monto del servidor y retorno propi
   const req = {
     method: 'POST',
     headers: { host: 'preview.example.cl', origin: 'https://preview.example.cl' },
-    body: { items: [{ id: 'filetillo-pollo', quantity: 2 }] }
+    body: { paymentMethod: 'card', items: [{ id: 'filetillo-pollo', quantity: 2 }] }
   };
   const response = { statusCode: 0, body: null, headers: {}, setHeader(key, value) { this.headers[key] = value; }, status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
   try {
@@ -86,7 +108,7 @@ test('el endpoint crea la transacción con el monto del servidor y retorno propi
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.ok, true);
   assert.match(response.body.orderNumber, /^R\d{4}-\d{4}-[A-HJ-NP-Z2-9]{3}$/);
-  assert.equal(sentRequest.body.amount, 14900);
+  assert.equal(sentRequest.body.amount, 15347);
   assert.equal(sentRequest.body.return_url, 'https://preview.example.cl/api/webpay-retorno');
   assert.equal(new URL(sentRequest.url).hostname, 'webpay3gint.transbank.cl');
 });

@@ -98,7 +98,8 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 - La portada y el catálogo cargan sin errores.
 - Las imágenes y páginas de producto responden correctamente.
 - El carrito permite agregar, ajustar y quitar productos.
-- El checkout registra el pedido por correo, abre Webpay y conserva el carrito si el pago no se completa.
+- El checkout permite elegir transferencia o tarjeta. La transferencia muestra la cuenta corriente y los canales para enviar el comprobante; la tarjeta suma un 3 % y abre Webpay.
+- El checkout registra el pedido por correo y conserva el carrito si el pago no se completa.
 - El retorno de Webpay confirma en el servidor el estado, monto, orden y código de autorización.
 - `robots.txt`, `sitemap.xml`, canonical, Open Graph y datos estructurados usan el dominio principal.
 - La versión publicada coincide con los archivos de este repositorio.

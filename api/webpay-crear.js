@@ -32,7 +32,10 @@ async function handler(req, res) {
   if (!body || typeof body !== 'object') return res.status(400).json({ ok: false, error: 'Solicitud no válida.' });
 
   const buyOrder = orderNumber();
-  const order = calculateOrder(body.items);
+  if (body.paymentMethod && body.paymentMethod !== 'card') {
+    return res.status(400).json({ ok: false, error: 'Medio de pago no válido para Webpay.' });
+  }
+  const order = calculateOrder(body.items, { cardSurcharge: true });
   if (!order) return res.status(400).json({ ok: false, error: 'Tu pedido está vacío o ya no está disponible.' });
 
   let config;
@@ -70,7 +73,7 @@ async function handler(req, res) {
       console.error('Transbank devolvió una URL inesperada', result.url);
       return res.status(502).json({ ok: false, error: 'Webpay devolvió una respuesta no válida.' });
     }
-    return res.status(200).json({ ok: true, token: result.token, url: result.url, amount: order.total, orderNumber: buyOrder });
+    return res.status(200).json({ ok: true, token: result.token, url: result.url, amount: order.total, surcharge: order.surcharge, orderNumber: buyOrder });
   } catch (error) {
     console.error('No se pudo crear la transacción Webpay', error);
     return res.status(502).json({ ok: false, error: 'No pudimos conectar con Webpay. Intenta nuevamente.' });

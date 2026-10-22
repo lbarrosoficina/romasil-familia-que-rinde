@@ -131,7 +131,7 @@
 <form id="checkoutForm" name="pedido-romasil" method="POST">
 <p class="honeypot" aria-hidden="true" inert><label>No completar este campo<input name="_honey" tabindex="-1" autocomplete="off"></label></p>
 <button class="icon-button dialog-close" type="button" id="closeDialog" aria-label="Cerrar">×</button>
-<p class="eyebrow">Pago seguro</p><h2 id="checkoutTitle">Datos de entrega</h2><p class="dialog-copy">Completa tus datos y continúa a Webpay para pagar con tarjeta de débito, crédito o prepago. Los datos de tu tarjeta se ingresan únicamente en Transbank.</p>
+<p class="eyebrow">Finalizar pedido</p><h2 id="checkoutTitle">Datos de entrega</h2><p class="dialog-copy">Completa tus datos y elige cómo quieres pagar.</p>
 <label>Nombre<input name="name" autocomplete="name" required placeholder="Tu nombre"></label>
 <label>Teléfono<input name="phone" autocomplete="tel" inputmode="tel" required placeholder="+56 9 1234 5678"></label>
 <label>Correo electrónico<input type="email" name="email" autocomplete="email" required placeholder="tu@correo.cl"></label>
@@ -140,10 +140,17 @@
 <label>Departamento o casa <span>(opcional)</span><input name="addressLine2" autocomplete="address-line2" placeholder="Ej. Depto. 502 o Casa 18"></label>
 </fieldset>
 <label>Comuna<select name="commune" autocomplete="address-level2" required><option value="" selected disabled>Selecciona una comuna</option><option>Providencia</option><option>Ñuñoa</option><option>Las Condes</option></select></label>
+<fieldset class="payment-methods"><legend>Medio de pago</legend>
+<label class="payment-option"><input type="radio" name="paymentMethod" value="transfer" required><span><strong>Transferencia bancaria</strong><small>Sin recargo. Envía el comprobante por correo o WhatsApp.</small></span></label>
+<label class="payment-option"><input type="radio" name="paymentMethod" value="card" required><span><strong>Tarjeta mediante Webpay</strong><small>Se agrega un recargo del 3% al total del pedido.</small></span></label>
+</fieldset>
+<section class="payment-panel transfer-panel" id="transferPanel" hidden aria-labelledby="transferTitle"><h3 id="transferTitle">Datos para transferir</h3><dl><div><dt>Titular</dt><dd>Leon Alejandro Barros Gonzalez</dd></div><div><dt>RUT</dt><dd>16.355.551-4</dd></div><div><dt>Banco</dt><dd>Banco Itaú</dd></div><div><dt>Cuenta</dt><dd>Cuenta corriente</dd></div><div><dt>Número</dt><dd>0223039206</dd></div></dl><p>Envía el comprobante a <a href="mailto:pagos@congeladosromasil.cl">pagos@congeladosromasil.cl</a> o por <a href="https://wa.me/56962319733?text=Hola%2C%20adjunto%20el%20comprobante%20de%20mi%20pedido%20en%20Congelados%20Romasil." target="_blank" rel="noopener">WhatsApp</a>.</p></section>
+<section class="payment-panel card-panel" id="cardPanel" hidden><p>El pago se procesa en el sitio seguro de Transbank. Romasil no recibe ni almacena los datos de tu tarjeta.</p></section>
+<div class="checkout-total" id="checkoutTotal" hidden><div><span>Pedido y despacho</span><strong id="checkoutBaseTotal">$0</strong></div><div id="cardSurchargeRow" hidden><span>Recargo tarjeta (3%)</span><strong id="cardSurcharge">$0</strong></div><div class="checkout-grand-total"><span>Total a pagar</span><strong id="checkoutGrandTotal">$0</strong></div></div>
 <label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar el pedido, procesar el pago y coordinar la entrega.</span></label>
-<button class="button primary full webpay-button" type="submit">Pagar con Webpay</button>
+<button class="button primary full payment-submit" type="submit">Continuar</button>
 <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
-<p class="form-note">Serás dirigido al sitio seguro de Transbank. Romasil no recibe ni almacena los datos de tu tarjeta.</p>
+<p class="form-note" id="paymentNote">Selecciona un medio de pago para continuar.</p>
 </form>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

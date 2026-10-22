@@ -3,10 +3,11 @@ const CATALOG = require('./_catalogo.json');
 
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
+const CARD_SURCHARGE_RATE = 0.03;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 
-function calculateOrder(items) {
+function calculateOrder(items, { cardSurcharge = false } = {}) {
   const quantities = new Map();
   const lines = Array.isArray(items) ? items.slice(0, MAX_LINES) : [];
   for (const item of lines) {
@@ -25,7 +26,9 @@ function calculateOrder(items) {
   }));
   const subtotal = products.reduce((sum, product) => sum + product.subtotal, 0);
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  return { products, subtotal, shipping, total: subtotal + shipping };
+  const baseTotal = subtotal + shipping;
+  const surcharge = cardSurcharge ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  return { products, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
 }
 
 function getWebpayConfig(env = process.env) {
@@ -87,6 +90,7 @@ function escapeHtml(value) {
 }
 
 module.exports = {
+  CARD_SURCHARGE_RATE,
   calculateOrder,
   createSessionId,
   escapeHtml,
