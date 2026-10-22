@@ -62,16 +62,16 @@
     </section>
 
     <section class="policy-section" id="condiciones">
-      <div class="policy-heading"><span>02</span><div><p class="eyebrow">Solicitud de pedido</p><h2>Condiciones de compra</h2></div></div>
+      <div class="policy-heading"><span>02</span><div><p class="eyebrow">Compra en línea</p><h2>Condiciones de compra</h2></div></div>
       <div class="policy-grid">
-        <article><h3>1. Arma tu solicitud</h3><p>El cliente selecciona productos y cantidades. En esta etapa no se realiza ningún cobro.</p></article>
-        <article><h3>2. Revisamos los datos</h3><p>Congelados Romasil confirma disponibilidad, comuna, costo de despacho y total antes de enviar el enlace de pago.</p></article>
-        <article><h3>3. Confirmación expresa</h3><p>El pedido solo se entiende aceptado cuando el vendedor confirma por escrito las condiciones y el cliente las acepta.</p></article>
+        <article><h3>1. Arma tu pedido</h3><p>El cliente selecciona productos y cantidades, revisa el costo de despacho y completa los datos de entrega.</p></article>
+        <article><h3>2. Paga con Webpay</h3><p>El sitio recalcula el total y dirige al cliente a Transbank para autorizar el pago.</p></article>
+        <article><h3>3. Coordinamos la entrega</h3><p>La compra queda registrada cuando Webpay autoriza el pago. Luego coordinamos la fecha y franja de despacho.</p></article>
       </div>
       <h3>Precios y disponibilidad</h3>
-      <p>Los precios publicados son finales y corresponden al formato indicado. Antes de aceptar el pedido informaremos el precio total, el despacho y cualquier otro cobro. Si un producto no tiene stock, se informará antes de confirmar la compra.</p>
+      <p>Los precios publicados son finales y corresponden al formato indicado. El carrito muestra el subtotal, el despacho y el total antes de continuar al pago. Si excepcionalmente un producto pagado no estuviera disponible, contactaremos al cliente para ofrecer un reemplazo aceptado expresamente o la devolución correspondiente.</p>
       <h3>Medio de pago</h3>
-      <p>El pago se realiza con tarjeta de crédito o débito mediante un enlace de Transbank Webpay enviado después de confirmar stock, despacho y total. Congelados Romasil no solicita ni recibe el número completo de la tarjeta, su código de seguridad ni las credenciales bancarias.</p>
+      <p>El pago se realiza con tarjeta de crédito, débito o prepago mediante Transbank Webpay. Congelados Romasil recibe el resultado de la transacción y los datos necesarios para identificarla, pero no solicita ni recibe el número completo de la tarjeta, su código de seguridad ni las credenciales bancarias.</p>
     </section>
 
     <section class="policy-section" id="despachos">
@@ -81,8 +81,8 @@
         <div><dt>Comunas con cobertura</dt><dd>Providencia, Ñuñoa y Las Condes</dd></div>
         <div><dt>Costo de despacho</dt><dd>$3.500. Gratis desde $50.000 en productos</dd></div>
         <div><dt>Pedido mínimo</dt><dd>Sin pedido mínimo</dd></div>
-        <div><dt>Días y horarios</dt><dd>Se coordinan según disponibilidad. Antes de aceptar el pedido informamos por escrito la fecha y la franja estimada de entrega.</dd></div>
-        <div><dt>Plazo referencial</dt><dd>24–48 horas, sujeto a confirmación</dd></div>
+        <div><dt>Días y horarios</dt><dd>Se coordinan según disponibilidad después de que Webpay autoriza el pago.</dd></div>
+        <div><dt>Plazo referencial</dt><dd>24–48 horas, sujeto a coordinación</dd></div>
         <div><dt>Embalaje utilizado</dt><dd>Envase original o presentación comercial cerrada, con protección secundaria para el traslado. Cuando la duración o la ruta lo requiera, se incorpora aislamiento térmico para proteger la cadena de frío.</dd></div>
       </dl>
       <h3>Al recibir</h3>
@@ -130,13 +130,13 @@
 <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-hidden="true" inert>
 <div class="drawer-header"><div><p class="eyebrow">Resumen</p><h2 id="cartTitle">Tu pedido</h2></div><button class="icon-button" id="closeCart" type="button" aria-label="Cerrar carrito">×</button></div>
 <div class="cart-items" id="cartItems"></div>
-<div class="cart-summary" id="cartSummary" hidden><div class="ship-progress" id="shipProgress"><p id="shipProgressText">Despacho gratis desde $50.000 en productos.</p><div class="ship-bar" role="progressbar" aria-label="Avance hacia el despacho gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="shipProgressBar"></span></div></div><div><span>Subtotal de productos</span><strong id="cartTotal">$0</strong></div><div><span>Despacho estimado</span><strong id="cartShipping">$0</strong></div><div class="cart-grand-total"><span>Total estimado</span><strong id="cartGrandTotal">$0</strong></div><p id="cartShippingNote" hidden></p><button class="button primary full" id="checkoutButton" type="button">Solicitar pedido</button></div>
+<div class="cart-summary" id="cartSummary" hidden><div class="ship-progress" id="shipProgress"><p id="shipProgressText">Despacho gratis desde $50.000 en productos.</p><div class="ship-bar" role="progressbar" aria-label="Avance hacia el despacho gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="shipProgressBar"></span></div></div><div><span>Subtotal de productos</span><strong id="cartTotal">$0</strong></div><div><span>Despacho</span><strong id="cartShipping">$0</strong></div><div class="cart-grand-total"><span>Total a pagar</span><strong id="cartGrandTotal">$0</strong></div><p id="cartShippingNote" hidden></p><button class="button primary full" id="checkoutButton" type="button">Ir al pago</button></div>
 </aside>
 <dialog id="checkoutDialog" aria-labelledby="checkoutTitle">
 <form id="checkoutForm" name="pedido-romasil" method="POST">
 <p class="honeypot" aria-hidden="true" inert><label>No completar este campo<input name="_honey" tabindex="-1" autocomplete="off"></label></p>
 <button class="icon-button dialog-close" type="button" id="closeDialog" aria-label="Cerrar">×</button>
-<p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Datos para confirmar</h2><p class="dialog-copy">Completa tus datos y envía tu pedido. Te llegará una copia por correo y se abrirá WhatsApp con el detalle para que nos lo mandes. Te confirmaremos stock, total y horario.</p>
+<p class="eyebrow">Pago seguro</p><h2 id="checkoutTitle">Datos de entrega</h2><p class="dialog-copy">Completa tus datos y continúa a Webpay para pagar con tarjeta de débito, crédito o prepago. Los datos de tu tarjeta se ingresan únicamente en Transbank.</p>
 <label>Nombre<input name="name" autocomplete="name" required placeholder="Tu nombre"></label>
 <label>Teléfono<input name="phone" autocomplete="tel" inputmode="tel" required placeholder="+56 9 1234 5678"></label>
 <label>Correo electrónico<input type="email" name="email" autocomplete="email" required placeholder="tu@correo.cl"></label>
@@ -145,10 +145,10 @@
 <label>Departamento o casa <span>(opcional)</span><input name="addressLine2" autocomplete="address-line2" placeholder="Ej. Depto. 502 o Casa 18"></label>
 </fieldset>
 <label>Comuna<select name="commune" autocomplete="address-level2" required><option value="" selected disabled>Selecciona una comuna</option><option>Providencia</option><option>Ñuñoa</option><option>Las Condes</option></select></label>
-<label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar la solicitud, notificarla por correo y continuar el envío mediante WhatsApp.</span></label>
-<button class="button primary full" type="submit">Enviar pedido</button>
+<label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar el pedido, procesar el pago y coordinar la entrega.</span></label>
+<button class="button primary full webpay-button" type="submit">Pagar con Webpay</button>
 <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
-<p class="form-note">No se realizará ningún cobro ni se confirmará una compra en esta etapa.</p>
+<p class="form-note">Serás dirigido al sitio seguro de Transbank. Romasil no recibe ni almacena los datos de tu tarjeta.</p>
 </form>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

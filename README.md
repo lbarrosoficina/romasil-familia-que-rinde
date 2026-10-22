@@ -24,3 +24,13 @@ Antes de publicar, revisar los cambios localmente, agruparlos en un solo lote y 
 ## Seguridad
 
 No guardar contraseñas, códigos de verificación, claves API, tokens ni credenciales en el repositorio.
+
+## Pago con Transbank Webpay Plus
+
+El checkout recalcula el total en el servidor, crea la transacción y confirma el resultado directamente con Transbank. Para probarlo en un despliegue Preview de Vercel, configurar:
+
+- `TRANSBANK_ENVIRONMENT=integration`
+- `TRANSBANK_COMMERCE_CODE` y `TRANSBANK_API_KEY` con las credenciales oficiales de integración, almacenadas fuera del repositorio
+- `PUBLIC_SITE_URL` con la URL HTTPS del despliegue que recibe el retorno
+
+En producción se deben configurar explícitamente `TRANSBANK_ENVIRONMENT=production`, `TRANSBANK_COMMERCE_CODE=597053106182` y `TRANSBANK_API_KEY` con las credenciales entregadas por Transbank. Si falta alguna, el botón falla de forma segura sin iniciar un cobro. Ver `.env.example`.

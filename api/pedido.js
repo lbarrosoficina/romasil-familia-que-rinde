@@ -15,6 +15,7 @@ const FREE_SHIPPING_THRESHOLD = 50000;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 const COMMUNES = ['Providencia', 'Ñuñoa', 'Las Condes'];
+const ORDER_PATTERN = /^R\d{4}-\d{4}-[A-HJ-NP-Z2-9]{3}$/;
 
 const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 const escapeHtml = text => String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -85,7 +86,7 @@ function tablaProductos(p) {
 ${filas}
 ${total('Subtotal de productos', money.format(p.subtotal))}
 ${total('Despacho', p.shipping === 0 ? 'Gratis' : money.format(p.shipping))}
-${total('Total referencial', money.format(p.total), true)}
+${total('Total a pagar', money.format(p.total), true)}
 </table>${p.porKilo ? `<p style="margin:8px 0 0;font-size:12px;color:${C.muted};">Los productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.</p>` : ''}`;
 }
 
@@ -132,22 +133,22 @@ ${tablaProductos(p)}
 <p style="margin:16px 0 24px;font-size:14px;color:${C.ink};"><strong>Despacho a:</strong> ${escapeHtml(c.addressLine1)}${c.addressLine2 ? ', ' + escapeHtml(c.addressLine2) : ''}, ${escapeHtml(c.commune)}</p>
 <h2 style="margin:0 0 8px;font-size:16px;color:${C.navy};">¿Qué sigue?</h2>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-${paso(1, 'Confirmamos contigo', 'Revisamos stock, total y franja de entrega, y te escribimos por WhatsApp o a este correo.')}
-${paso(2, 'Pagas con Webpay', 'Te enviamos un enlace de Transbank para pagar con tarjeta de crédito o débito.')}
+${paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank.')}
+${paso(2, 'Coordinamos la entrega', 'Cuando el pago sea autorizado, te contactaremos para confirmar la fecha y franja de despacho.')}
 ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
 </table>
-<p style="margin:0 0 20px;padding:12px 16px;background:${C.cream};border-radius:12px;font-size:13px;line-height:1.5;color:${C.ink};">Este correo no es una confirmación de compra y no se te ha cobrado nada. La compra se confirma cuando aceptes el total que te enviaremos.</p>
+<p style="margin:0 0 20px;padding:12px 16px;background:${C.cream};border-radius:12px;font-size:13px;line-height:1.5;color:${C.ink};">Este correo confirma que registramos el pedido, pero no confirma el pago. Webpay mostrará el resultado de la transacción y te avisaremos cuando el pago quede autorizado.</p>
 <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${C.ink};">¿Dudas o quieres cambiar algo? Responde este correo o escríbenos por WhatsApp. Atendemos de lunes a domingo, de 08:00 a 20:00.</p>
 <p style="margin:0 0 20px;"><a href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, tengo una consulta sobre mi pedido ' + numero)}" style="display:inline-block;background:#15803D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir por WhatsApp</a></p>
 <p style="margin:0;font-size:14px;color:${C.ink};">Un abrazo,<br><strong>Equipo Congelados Romasil</strong></p>`);
   const text = `¡Gracias por tu pedido, ${nombre}!\n\nRecibimos tu solicitud ${numero} y ya la estamos revisando.\n\n` + textoProductos(p) +
-    `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\n\n¿Qué sigue?\n1. Confirmamos contigo: revisamos stock, total y franja de entrega.\n2. Pagas con Webpay: te enviamos un enlace de Transbank.\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo no es una confirmación de compra y no se te ha cobrado nada.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;
-  return { from: FROM_CLIENTE, to: [c.email], reply_to: VENTAS, subject: `Recibimos tu solicitud de pedido ${numero} – Congelados Romasil`, html, text };
+    `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\n\n¿Qué sigue?\n1. Pagas con Webpay en el sitio seguro de Transbank.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo confirma el registro del pedido, no el resultado del pago.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;
+  return { from: FROM_CLIENTE, to: [c.email], reply_to: VENTAS, subject: `Registramos tu pedido ${numero} – Congelados Romasil`, html, text };
 }
 
 function textoProductos(p) {
   return p.lineas.map(l => `${l.quantity} × ${l.name} — ${money.format(l.subtotal)}${l.pricedByKilo ? ' (precio por kg; peso por confirmar)' : ''}`).join('\n') +
-    `\n\nSubtotal: ${money.format(p.subtotal)}\nDespacho: ${p.shipping === 0 ? 'Gratis' : money.format(p.shipping)}\nTotal referencial: ${money.format(p.total)}\n`;
+    `\n\nSubtotal: ${money.format(p.subtotal)}\nDespacho: ${p.shipping === 0 ? 'Gratis' : money.format(p.shipping)}\nTotal a pagar: ${money.format(p.total)}\n`;
 }
 
 async function enviarCorreo(apiKey, correo, idempotencia) {
@@ -195,7 +196,8 @@ async function handler(req, res) {
   }
 
   const ahora = new Date();
-  const numero = numeroPedido(ahora);
+  const numeroSolicitado = String(body.orderNumber || '').toUpperCase();
+  const numero = ORDER_PATTERN.test(numeroSolicitado) ? numeroSolicitado : numeroPedido(ahora);
   try {
     await enviarCorreo(apiKey, correoVentas(pedido, numero, fechaChile(ahora)), `${numero}-ventas`);
   } catch (error) {

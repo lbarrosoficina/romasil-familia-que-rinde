@@ -2,3 +2,5 @@
 .netlify/
 tmp/
 *.log
+.env*
+!.env.example

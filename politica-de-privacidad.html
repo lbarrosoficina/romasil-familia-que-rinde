@@ -84,11 +84,11 @@
       <div class="policy-heading"><span>03</span><div><p class="eyebrow">Cómo funciona hoy</p><h2>Cómo se registra y envía tu solicitud</h2></div></div>
       <ul class="plain-list">
         <li>El carrito se guarda temporalmente en el almacenamiento de sesión de tu navegador para mantener productos y cantidades al navegar entre las páginas del sitio. Se elimina cuando finaliza esa sesión del navegador.</li>
-        <li>Al pulsar “Enviar solicitud”, los datos del formulario y el resumen del pedido se transmiten mediante FormSubmit para que Congelados Romasil los reciba en su correo comercial y pueda gestionar la solicitud.</li>
-        <li>FormSubmit puede procesar y conservar temporalmente la presentación para entregarla por correo, prevenir abusos y mantener la seguridad del servicio.</li>
-        <li>Después del registro se abre una conversación de WhatsApp dirigida al número comercial, con el resumen preparado. El mensaje solo se envía por WhatsApp cuando tú lo confirmas dentro de esa aplicación.</li>
-        <li>Si aceptas el pedido después de confirmar stock, despacho y total, recibirás un enlace de Transbank Webpay. Los datos de la tarjeta se ingresan directamente en esa plataforma y no se transmiten mediante el formulario de Congelados Romasil.</li>
-        <li>WhatsApp y el proveedor del correo electrónico aplican sus propias condiciones y políticas de privacidad al procesar la comunicación.</li>
+        <li>Al pulsar “Pagar con Webpay”, el sitio recalcula el total en el servidor, registra los datos del pedido y prepara la transacción de pago.</li>
+        <li>El registro principal se envía mediante nuestro proveedor de correo. FormSubmit se utiliza únicamente como respaldo si ese envío falla y puede procesar temporalmente la presentación para entregarla y prevenir abusos.</li>
+        <li>El navegador te dirige al sitio seguro de Transbank Webpay. Los datos de la tarjeta se ingresan directamente en esa plataforma y no se transmiten mediante el formulario de Congelados Romasil.</li>
+        <li>Transbank devuelve a nuestro servidor el estado de la transacción, el monto, la orden de compra, el código de autorización, el tipo de pago y los últimos cuatro dígitos de la tarjeta cuando corresponda.</li>
+        <li>Transbank, el proveedor del correo y WhatsApp —cuando decides contactarnos por ese canal— aplican sus propias condiciones y políticas de privacidad.</li>
       </ul>
     </section>
 
@@ -111,15 +111,15 @@
         <article><h3>FormSubmit</h3><p>Recibe los datos enviados en el formulario y los reenvía al correo comercial de Congelados Romasil. También puede procesar registros técnicos y conservar temporalmente las presentaciones para operar y proteger el servicio.</p></article>
         <article><h3>Google Fonts</h3><p>Entrega las tipografías utilizadas por la web. Al cargar estos recursos, Google puede recibir información técnica como la dirección IP y datos del navegador.</p></article>
         <article><h3>Google Analytics</h3><p>Mide de forma agregada el uso de la web, solo si aceptas la analítica en el aviso de cookies. Google puede recibir información técnica como la dirección IP, datos del navegador y las páginas visitadas. Ver la sección <a href="#cookies">Cookies y analítica</a>.</p></article>
-        <article><h3>Correo y WhatsApp</h3><p>La notificación del pedido puede llegar al correo comercial de Congelados Romasil y el resumen se prepara para continuar la comunicación mediante WhatsApp. Cada proveedor trata la información conforme a sus propias condiciones.</p></article>
-        <article><h3>Transbank Webpay</h3><p>Procesa el pago con tarjeta de crédito o débito cuando el cliente abre el enlace enviado después de confirmar el pedido. Transbank trata los datos de pago en su propia plataforma; Congelados Romasil no recibe el número completo de la tarjeta ni su código de seguridad.</p></article>
+        <article><h3>Correo y WhatsApp</h3><p>El pedido y la confirmación interna del pago pueden llegar al correo comercial de Congelados Romasil. WhatsApp solo procesa información si decides contactarnos por ese canal. Cada proveedor trata los datos conforme a sus propias condiciones.</p></article>
+        <article><h3>Transbank Webpay</h3><p>Procesa el pago con tarjeta de crédito, débito o prepago en su propia plataforma. Congelados Romasil recibe el resultado y los identificadores de la transacción, pero no el número completo de la tarjeta ni su código de seguridad.</p></article>
       </div>
       <p>Estos proveedores pueden operar infraestructura fuera de Chile. No vendemos ni cedemos datos personales a terceros para sus propios fines publicitarios.</p>
     </section>
 
     <section class="policy-section" id="conservacion">
       <div class="policy-heading"><span>06</span><div><p class="eyebrow">Solo el tiempo necesario</p><h2>Conservación y eliminación</h2></div></div>
-      <p>El contenido del carrito permanece temporalmente en el almacenamiento de sesión del navegador y se elimina al finalizar esa sesión. Las solicitudes enviadas pueden conservarse temporalmente en FormSubmit y permanecer en el correo comercial o en WhatsApp. Congelados Romasil aplica los siguientes plazos internos, contados desde la última interacción o desde el cierre del caso:</p>
+      <p>El contenido del carrito permanece temporalmente en el almacenamiento de sesión del navegador y se elimina cuando Webpay confirma el pago o al finalizar esa sesión. Los pedidos pueden conservarse temporalmente en FormSubmit cuando opera como respaldo y permanecer en el correo comercial. Congelados Romasil aplica los siguientes plazos internos, contados desde la última interacción o desde el cierre del caso:</p>
       <dl class="data-grid compact">
         <div><dt>Consultas no convertidas en compra</dt><dd>6 meses desde la última interacción.</dd></div>
         <div><dt>Pedidos y documentos comerciales</dt><dd>6 años desde su emisión o cierre, o durante el plazo mayor que exija una obligación tributaria, comercial o una controversia vigente.</dd></div>
@@ -172,7 +172,7 @@
 
     <aside class="legal-note">
       <strong>Revisión de esta política</strong>
-      <p>Esta política debe revisarse si la web incorpora pagos integrados distintos del enlace de Transbank Webpay, cuentas, newsletters, analítica, publicidad o nuevos proveedores que traten datos personales.</p>
+      <p>Esta política debe revisarse si la web incorpora otros medios de pago, cuentas, newsletters, publicidad o nuevos proveedores que traten datos personales.</p>
     </aside>
   </main><footer class="site-footer">
 <div class="wrap">
@@ -190,13 +190,13 @@
 <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-hidden="true" inert>
 <div class="drawer-header"><div><p class="eyebrow">Resumen</p><h2 id="cartTitle">Tu pedido</h2></div><button class="icon-button" id="closeCart" type="button" aria-label="Cerrar carrito">×</button></div>
 <div class="cart-items" id="cartItems"></div>
-<div class="cart-summary" id="cartSummary" hidden><div class="ship-progress" id="shipProgress"><p id="shipProgressText">Despacho gratis desde $50.000 en productos.</p><div class="ship-bar" role="progressbar" aria-label="Avance hacia el despacho gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="shipProgressBar"></span></div></div><div><span>Subtotal de productos</span><strong id="cartTotal">$0</strong></div><div><span>Despacho estimado</span><strong id="cartShipping">$0</strong></div><div class="cart-grand-total"><span>Total estimado</span><strong id="cartGrandTotal">$0</strong></div><p id="cartShippingNote" hidden></p><button class="button primary full" id="checkoutButton" type="button">Solicitar pedido</button></div>
+<div class="cart-summary" id="cartSummary" hidden><div class="ship-progress" id="shipProgress"><p id="shipProgressText">Despacho gratis desde $50.000 en productos.</p><div class="ship-bar" role="progressbar" aria-label="Avance hacia el despacho gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="shipProgressBar"></span></div></div><div><span>Subtotal de productos</span><strong id="cartTotal">$0</strong></div><div><span>Despacho</span><strong id="cartShipping">$0</strong></div><div class="cart-grand-total"><span>Total a pagar</span><strong id="cartGrandTotal">$0</strong></div><p id="cartShippingNote" hidden></p><button class="button primary full" id="checkoutButton" type="button">Ir al pago</button></div>
 </aside>
 <dialog id="checkoutDialog" aria-labelledby="checkoutTitle">
 <form id="checkoutForm" name="pedido-romasil" method="POST">
 <p class="honeypot" aria-hidden="true" inert><label>No completar este campo<input name="_honey" tabindex="-1" autocomplete="off"></label></p>
 <button class="icon-button dialog-close" type="button" id="closeDialog" aria-label="Cerrar">×</button>
-<p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Datos para confirmar</h2><p class="dialog-copy">Completa tus datos y envía tu pedido. Te llegará una copia por correo y se abrirá WhatsApp con el detalle para que nos lo mandes. Te confirmaremos stock, total y horario.</p>
+<p class="eyebrow">Pago seguro</p><h2 id="checkoutTitle">Datos de entrega</h2><p class="dialog-copy">Completa tus datos y continúa a Webpay para pagar con tarjeta de débito, crédito o prepago. Los datos de tu tarjeta se ingresan únicamente en Transbank.</p>
 <label>Nombre<input name="name" autocomplete="name" required placeholder="Tu nombre"></label>
 <label>Teléfono<input name="phone" autocomplete="tel" inputmode="tel" required placeholder="+56 9 1234 5678"></label>
 <label>Correo electrónico<input type="email" name="email" autocomplete="email" required placeholder="tu@correo.cl"></label>
@@ -205,10 +205,10 @@
 <label>Departamento o casa <span>(opcional)</span><input name="addressLine2" autocomplete="address-line2" placeholder="Ej. Depto. 502 o Casa 18"></label>
 </fieldset>
 <label>Comuna<select name="commune" autocomplete="address-level2" required><option value="" selected disabled>Selecciona una comuna</option><option>Providencia</option><option>Ñuñoa</option><option>Las Condes</option></select></label>
-<label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar la solicitud, notificarla por correo y continuar el envío mediante WhatsApp.</span></label>
-<button class="button primary full" type="submit">Enviar pedido</button>
+<label class="consent"><input type="checkbox" name="privacyConsent" value="Aceptado" required> <span>He leído la <a href="politica-de-privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el uso de mis datos para registrar el pedido, procesar el pago y coordinar la entrega.</span></label>
+<button class="button primary full webpay-button" type="submit">Pagar con Webpay</button>
 <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
-<p class="form-note">No se realizará ningún cobro ni se confirmará una compra en esta etapa.</p>
+<p class="form-note">Serás dirigido al sitio seguro de Transbank. Romasil no recibe ni almacena los datos de tu tarjeta.</p>
 </form>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

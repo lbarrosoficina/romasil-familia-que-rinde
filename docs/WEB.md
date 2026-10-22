@@ -98,7 +98,8 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 - La portada y el catálogo cargan sin errores.
 - Las imágenes y páginas de producto responden correctamente.
 - El carrito permite agregar, ajustar y quitar productos.
-- El formulario conserva el flujo de correo y WhatsApp documentado.
+- El checkout registra el pedido por correo, abre Webpay y conserva el carrito si el pago no se completa.
+- El retorno de Webpay confirma en el servidor el estado, monto, orden y código de autorización.
 - `robots.txt`, `sitemap.xml`, canonical, Open Graph y datos estructurados usan el dominio principal.
 - La versión publicada coincide con los archivos de este repositorio.
 - No se publicaron secretos ni credenciales.
@@ -110,7 +111,8 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 | GitHub cambió, pero la web no | Despliegue de Vercel asociado a `main` |
 | La web no coincide con lo local | Último commit local, `origin/main` y despliegue de Vercel |
 | El dominio no abre | Dominio asignado en Vercel, DNS en Cloudflare y certificado |
-| El formulario no envía | Consola del navegador, FormSubmit y activación del destinatario |
-| WhatsApp no abre | Número configurado y bloqueo de navegación del navegador |
+| El formulario no envía | Consola del navegador, Resend, FormSubmit y activación del destinatario |
+| Webpay no abre | Variables `TRANSBANK_*`, `PUBLIC_SITE_URL`, respuesta de `/api/webpay-crear` y CSP de Vercel |
+| El retorno no confirma | Logs de `/api/webpay-retorno`, ambiente configurado y URL pública HTTPS |
 
 Antes de modificar DNS o correo, revisar [CORREO.md](CORREO.md).

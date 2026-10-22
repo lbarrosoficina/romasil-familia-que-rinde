@@ -127,6 +127,8 @@ const FREE_SHIPPING_THRESHOLD = 50000;
 const ORDER_API_ENDPOINT = '/api/pedido';
 const ORDER_API_TIMEOUT_MS = 12000;
 const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil.cl';
+const WEBPAY_API_ENDPOINT = '/api/webpay-crear';
+const WEBPAY_API_TIMEOUT_MS = 12000;
 
 function setPageRegionsInert(isInert) {
   pageRegions.forEach(region => { region.inert = isInert; });
@@ -394,7 +396,7 @@ function buildOrderSummary(data, orderNumber = '') {
   const addressDetails = addressLine2 ? `\nDepartamento/casa: ${addressLine2}` : '';
   const weightNote = cartItemsList.some(item => item.pricedByKilo) ? '\nLos productos por kg se estiman con 1 kg por unidad. El total y el despacho final dependen del peso real.' : '';
   const orderLine = orderNumber ? `\nN° de solicitud: ${orderNumber}` : '';
-  return `Hola, quiero solicitar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal referencial: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal referencial: ${money.format(total + shipping)}${weightNote}`;
+  return `Hola, quiero registrar este pedido en Congelados Romasil.${orderLine}\n\nNombre: ${data.get('name')}\nTeléfono: ${data.get('phone')}\nCorreo electrónico: ${data.get('email')}\nDirección: ${data.get('addressLine1')}${addressDetails}\nComuna: ${data.get('commune')}\n\nProductos:\n${items}\n\nSubtotal: ${money.format(total)}\nDespacho: ${shippingLabel}\nTotal a pagar: ${money.format(total + shipping)}${weightNote}`;
 }
 
 // Cerrar el formulario al hacer clic en la zona oscura alrededor.
@@ -411,19 +413,28 @@ checkoutForm.addEventListener('submit', async event => {
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   const data = new FormData(checkoutForm);
   submitButton.disabled = true;
-  submitButton.textContent = 'Enviando…';
-  formStatus.textContent = 'Registrando tu solicitud de forma segura…';
+  submitButton.textContent = 'Conectando con Webpay…';
+  formStatus.textContent = 'Preparando tu pago de forma segura…';
   const resetButton = () => {
     submitButton.disabled = false;
-    submitButton.textContent = 'Enviar pedido';
+    submitButton.textContent = 'Pagar con Webpay';
   };
 
-  // 1. Envío principal: función propia con Resend (aviso a ventas@ y confirmación al cliente).
-  // 2. Respaldo: si la función no responde o falla, FormSubmit, como antes.
-  let orderNumber = '';
+  let payment;
+  try {
+    payment = await createWebpayTransaction();
+  } catch (error) {
+    console.error('No fue posible iniciar Webpay', error);
+    formStatus.textContent = error.message || 'No pudimos conectar con Webpay. Intenta nuevamente.';
+    resetButton();
+    return;
+  }
+
+  // Registramos el pedido antes de salir a Webpay para poder relacionar el pago con los datos de entrega.
+  let orderNumber = payment.orderNumber;
   let channel = '';
   try {
-    const result = await sendOrderByResend(data);
+    const result = await sendOrderByResend(data, orderNumber);
     if (result.status === 'ok') {
       orderNumber = result.orderNumber;
       channel = 'resend';
@@ -437,7 +448,7 @@ checkoutForm.addEventListener('submit', async event => {
   }
   if (!channel) {
     try {
-      await sendOrderByFormSubmit(data, buildOrderSummary(data));
+      await sendOrderByFormSubmit(data, buildOrderSummary(data, orderNumber));
       channel = 'formsubmit';
     } catch (error) {
       console.error('No fue posible registrar la solicitud', error);
@@ -449,19 +460,15 @@ checkoutForm.addEventListener('submit', async event => {
     }
   }
 
-  const summary = buildOrderSummary(data, orderNumber);
   track('generate_lead', cartEventParams({ lead_source: 'formulario_pedido', order_channel: channel }));
-  cart.clear();
-  persistCart();
-  renderCart();
-  checkoutDialog.close();
-  // Breve espera para que Analytics alcance a enviar generate_lead antes de salir hacia WhatsApp.
-  window.setTimeout(() => window.location.assign(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summary)}`), analyticsEnabled ? 300 : 0);
+  track('add_payment_info', cartEventParams({ payment_type: 'Webpay' }));
+  formStatus.textContent = 'Abriendo Webpay…';
+  postToWebpay(payment);
 });
 
 // Envío principal. Devuelve { status: 'ok', orderNumber }, { status: 'invalid', message } si los datos no pasan
 // la validación del servidor, o lanza un error si la función falla (y entonces se usa el respaldo).
-async function sendOrderByResend(data) {
+async function sendOrderByResend(data, orderNumber) {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), ORDER_API_TIMEOUT_MS);
   try {
@@ -477,6 +484,7 @@ async function sendOrderByResend(data) {
         addressLine2: String(data.get('addressLine2') || '').trim(),
         commune: data.get('commune'),
         privacyConsent: data.get('privacyConsent') === 'Aceptado',
+        orderNumber,
         items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity }))
       }),
       signal: controller.signal
@@ -488,6 +496,39 @@ async function sendOrderByResend(data) {
   } finally {
     window.clearTimeout(timer);
   }
+}
+
+async function createWebpayTransaction() {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), WEBPAY_API_TIMEOUT_MS);
+  try {
+    const response = await fetch(WEBPAY_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: [...cart.values()].map(({ id, quantity }) => ({ id, quantity })) }),
+      signal: controller.signal
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.ok || !result?.token || !result?.url || !result?.orderNumber) {
+      throw new Error(result?.error || 'No pudimos iniciar el pago con Webpay.');
+    }
+    return result;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+function postToWebpay(payment) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = payment.url;
+  const token = document.createElement('input');
+  token.type = 'hidden';
+  token.name = 'token_ws';
+  token.value = payment.token;
+  form.appendChild(token);
+  document.body.appendChild(form);
+  form.submit();
 }
 
 // Respaldo: FormSubmit (dirección activada para congeladosromasil.cl; ver docs/CORREO.md).
