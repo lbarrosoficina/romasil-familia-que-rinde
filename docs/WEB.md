@@ -105,6 +105,10 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 - La versión publicada coincide con los archivos de este repositorio.
 - No se publicaron secretos ni credenciales.
 
+## Validación productiva de Transbank
+
+Mientras Transbank valida el comercio, `productos.html` incluye el producto técnico `prueba-transbank-50` por $50. Solo puede comprarse en una unidad y sin despacho ni recargo, por lo que la transacción Webpay es exactamente de $50. No corresponde a un producto físico. Una vez aprobada la prueba real, quitar su tarjeta de `productos.html`, ejecutar `05 Scripts/web/build-productos.ps1` y publicar nuevamente.
+
 ## Diagnóstico rápido
 
 | Situación | Revisar |

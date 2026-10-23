@@ -33,6 +33,18 @@ test('calcula en el servidor el recargo de 3% para tarjeta', () => {
   assert.equal(order.total, 9476);
 });
 
+test('el producto de validación cobra exactamente $50 sin despacho ni recargo', () => {
+  const order = calculateOrder([{ id: 'prueba-transbank-50', quantity: 1 }], { cardSurcharge: true });
+  assert.equal(order.subtotal, 50);
+  assert.equal(order.shipping, 0);
+  assert.equal(order.surcharge, 0);
+  assert.equal(order.total, 50);
+  assert.equal(calculateOrder([
+    { id: 'prueba-transbank-50', quantity: 1 },
+    { id: 'filetillo-pollo', quantity: 1 }
+  ], { cardSurcharge: true }), null);
+});
+
 test('el pedido distingue transferencia y tarjeta al calcular el total', () => {
   const base = {
     name: 'Cliente Prueba', phone: '+56 9 1234 5678', email: 'cliente@example.cl',
@@ -45,6 +57,19 @@ test('el pedido distingue transferencia y tarjeta al calcular el total', () => {
   assert.equal(transfer.surcharge, 0);
   assert.equal(card.total, 9476);
   assert.equal(card.surcharge, 276);
+});
+
+test('el pedido de validación queda limitado a una unidad por $50', () => {
+  const base = {
+    name: 'Cliente Prueba', phone: '+56 9 1234 5678', email: 'cliente@example.cl',
+    addressLine1: 'Av. Providencia 123', commune: 'Providencia', privacyConsent: true,
+    paymentMethod: 'card'
+  };
+  const result = validarPedido({ ...base, items: [{ id: 'prueba-transbank-50', quantity: 1 }] });
+  assert.equal(result.pedido.total, 50);
+  assert.equal(result.pedido.shipping, 0);
+  assert.equal(result.pedido.surcharge, 0);
+  assert.match(validarPedido({ ...base, items: [{ id: 'prueba-transbank-50', quantity: 2 }] }).errores[0], /una unidad/);
 });
 
 test('descarta productos y cantidades manipuladas', () => {

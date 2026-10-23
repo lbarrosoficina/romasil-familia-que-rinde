@@ -65,6 +65,9 @@ button{font:inherit;cursor:pointer}
 /* Productos */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
 .product-card{background:var(--surface);border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.payment-test-card{border:2px dashed var(--accent-strong);background:#fffaf0}
+.payment-test-card .product-art img.packshot{padding:44px 22px;background:var(--cream-2)}
+.payment-test-card .card-quantity{display:none}
 .product-card[hidden]{display:none}
 .product-art{position:relative}
 .product-art img{width:100%;height:auto;aspect-ratio:10/7;object-fit:cover;border-radius:var(--radius)}
