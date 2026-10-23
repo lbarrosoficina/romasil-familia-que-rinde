@@ -227,9 +227,10 @@ function renderCart() {
   cartItems.innerHTML = items.map(item => {
     const id = escapeHtml(item.id);
     const name = escapeHtml(item.name);
+    const quantityControls = item.id === PAYMENT_TEST_PRODUCT_ID ? '' : `<div class="quantity"><button type="button" data-action="decrease" data-id="${id}" aria-label="Quitar una unidad de ${name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${id}" aria-label="Agregar una unidad de ${name}">+</button></div>`;
     return `
     <div class="cart-line">
-      <div><h3>${name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p><div class="quantity"><button type="button" data-action="decrease" data-id="${id}" aria-label="Quitar una unidad de ${name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${id}" aria-label="Agregar una unidad de ${name}">+</button></div><button class="remove" type="button" data-action="remove" data-id="${id}" aria-label="Eliminar ${name} del pedido">Eliminar</button></div>
+      <div><h3>${name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p>${quantityControls}<button class="remove" type="button" data-action="remove" data-id="${id}" aria-label="Eliminar ${name} del pedido">Eliminar</button></div>
       <strong>${money.format(item.price * item.quantity)}</strong>
     </div>`;
   }).join('');

@@ -191,6 +191,7 @@ a.filter{display:inline-flex;align-items:center;text-decoration:none}
 #cartShippingNote{font-size:13px;color:var(--muted);margin-bottom:8px}
 #cartShippingNote[hidden]{display:none}
 .cart-summary>.ship-progress{display:grid;justify-content:normal;gap:8px;padding-bottom:12px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+#shipProgress[hidden]{display:none}
 .ship-progress p{font-size:15px;color:var(--ink)}
 .ship-progress strong{color:var(--navy)}
 .ship-bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
