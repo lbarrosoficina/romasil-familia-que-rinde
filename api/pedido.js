@@ -15,7 +15,6 @@ const FREE_SHIPPING_THRESHOLD = 50000;
 const CARD_SURCHARGE_RATE = 0.03;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
-const PAYMENT_TEST_PRODUCT_ID = 'prueba-transbank-50';
 const COMMUNES = ['Providencia', 'Ñuñoa', 'Las Condes'];
 const ORDER_PATTERN = /^R\d{4}-\d{4}-[A-HJ-NP-Z2-9]{3}$/;
 
@@ -53,17 +52,13 @@ function validarPedido(body) {
     cantidades.set(id, Math.min((cantidades.get(id) || 0) + quantity, MAX_QUANTITY));
   }
   if (!cantidades.size) errores.push('Tu pedido está vacío o tiene productos que ya no están disponibles.');
-  if (cantidades.has(PAYMENT_TEST_PRODUCT_ID) && (cantidades.size !== 1 || cantidades.get(PAYMENT_TEST_PRODUCT_ID) !== 1)) {
-    errores.push('El producto de prueba Transbank debe comprarse solo y en una unidad.');
-  }
   if (errores.length) return { errores };
 
   const lineas = [...cantidades].map(([id, quantity]) => ({ id, quantity, ...CATALOG[id], subtotal: CATALOG[id].price * quantity }));
-  const isPaymentTest = lineas.length === 1 && lineas[0].id === PAYMENT_TEST_PRODUCT_ID;
   const subtotal = lineas.reduce((sum, line) => sum + line.subtotal, 0);
-  const shipping = isPaymentTest || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = subtotal + shipping;
-  const surcharge = paymentMethod === 'card' && !isPaymentTest ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { pedido: { cliente, phoneDigits, lineas, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge, paymentMethod, porKilo: lineas.some(line => line.pricedByKilo) } };
 }
 
@@ -146,7 +141,7 @@ ${tablaProductos(p)}
 <h2 style="margin:0 0 8px;font-size:16px;color:${C.navy};">¿Qué sigue?</h2>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
 ${p.paymentMethod === 'card'
-    ? paso(1, 'Pagas con Webpay', p.surcharge ? 'Al enviar tus datos te dirigimos al sitio seguro de Transbank. El total incluye el recargo informado del 3%.' : 'Al enviar tus datos te dirigimos al sitio seguro de Transbank.')
+    ? paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank. El total incluye el recargo informado del 3%.')
     : paso(1, 'Realiza la transferencia', 'Transfiere a la cuenta indicada en la web y envía el comprobante a pagos@congeladosromasil.cl o por WhatsApp.')}
 ${paso(2, 'Coordinamos la entrega', p.paymentMethod === 'card' ? 'Cuando el pago sea autorizado, te contactaremos para confirmar la fecha y franja de despacho.' : 'Cuando confirmemos la transferencia, te contactaremos para confirmar la fecha y franja de despacho.')}
 ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
@@ -156,7 +151,7 @@ ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
 <p style="margin:0 0 20px;"><a href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, tengo una consulta sobre mi pedido ' + numero)}" style="display:inline-block;background:#15803D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir por WhatsApp</a></p>
 <p style="margin:0;font-size:14px;color:${C.ink};">Un abrazo,<br><strong>Equipo Congelados Romasil</strong></p>`);
   const paymentStep = p.paymentMethod === 'card'
-    ? `1. Pagas con Webpay en el sitio seguro de Transbank.${p.surcharge ? ' El total incluye el recargo informado del 3%.' : ''}\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.`
+    ? '1. Pagas con Webpay en el sitio seguro de Transbank. El total incluye el recargo informado del 3%.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.'
     : '1. Realiza la transferencia a la cuenta indicada en la web.\n2. Envía el comprobante a pagos@congeladosromasil.cl o por WhatsApp y coordinaremos la entrega cuando lo validemos.';
   const text = `¡Gracias por tu pedido, ${nombre}!\n\nRecibimos tu solicitud ${numero} y ya la estamos revisando.\n\n` + textoProductos(p) +
     `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\nMedio de pago: ${p.paymentMethod === 'card' ? 'Tarjeta mediante Webpay' : 'Transferencia bancaria'}\n\n¿Qué sigue?\n${paymentStep}\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo confirma el registro del pedido, no el resultado del pago.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;

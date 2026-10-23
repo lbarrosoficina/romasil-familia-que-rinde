@@ -6,7 +6,6 @@ const FREE_SHIPPING_THRESHOLD = 50000;
 const CARD_SURCHARGE_RATE = 0.03;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
-const PAYMENT_TEST_PRODUCT_ID = 'prueba-transbank-50';
 
 function calculateOrder(items, { cardSurcharge = false } = {}) {
   const quantities = new Map();
@@ -18,7 +17,6 @@ function calculateOrder(items, { cardSurcharge = false } = {}) {
     quantities.set(id, Math.min((quantities.get(id) || 0) + quantity, MAX_QUANTITY));
   }
   if (!quantities.size) return null;
-  if (quantities.has(PAYMENT_TEST_PRODUCT_ID) && (quantities.size !== 1 || quantities.get(PAYMENT_TEST_PRODUCT_ID) !== 1)) return null;
 
   const products = [...quantities].map(([id, quantity]) => ({
     id,
@@ -26,11 +24,10 @@ function calculateOrder(items, { cardSurcharge = false } = {}) {
     ...CATALOG[id],
     subtotal: CATALOG[id].price * quantity
   }));
-  const isPaymentTest = products.length === 1 && products[0].id === PAYMENT_TEST_PRODUCT_ID;
   const subtotal = products.reduce((sum, product) => sum + product.subtotal, 0);
-  const shipping = isPaymentTest || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = subtotal + shipping;
-  const surcharge = cardSurcharge && !isPaymentTest ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = cardSurcharge ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { products, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
 }
 

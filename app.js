@@ -76,17 +76,12 @@ const CATALOG = {
   'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
   'machas-media-concha': { name: 'Machas en media concha congeladas', price: 7900, pricedByKilo: false },
   'salmon-nacional': { name: 'Salmón nacional filete', price: 7950, pricedByKilo: false },
-  'atun-steak': { name: 'Atún steak premium', price: 2990, pricedByKilo: false },
-  'prueba-transbank-50': { name: 'Producto de prueba Transbank', price: 50, pricedByKilo: false }
+  'atun-steak': { name: 'Atún steak premium', price: 2990, pricedByKilo: false }
 };
 // </catalogo>
 const MAX_QUANTITY = 99;
-const PAYMENT_TEST_PRODUCT_ID = 'prueba-transbank-50';
-function isPaymentTestOrder(items) {
-  return items.length === 1 && items[0].id === PAYMENT_TEST_PRODUCT_ID && items[0].quantity === 1;
-}
 function cartLine(id, quantity) {
-  return { id, ...CATALOG[id], quantity: id === PAYMENT_TEST_PRODUCT_ID ? 1 : quantity };
+  return { id, ...CATALOG[id], quantity };
 }
 function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -204,17 +199,16 @@ function trapDrawerFocus(event) {
 
 function renderCart() {
   const items = [...cart.values()];
-  const isPaymentTest = isPaymentTestOrder(items);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   cartCount.textContent = count;
   openCartButton.setAttribute('aria-label', `Abrir carrito, ${count} productos`);
   cartSummary.hidden = items.length === 0;
   cartTotal.textContent = money.format(total);
-  const shipping = isPaymentTest || total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
-  renderShippingProgress(total, isPaymentTest);
+  renderShippingProgress(total);
   const hasKiloItems = items.some(item => item.pricedByKilo);
   cartShippingNote.hidden = !hasKiloItems;
   cartShippingNote.textContent = hasKiloItems
@@ -227,20 +221,17 @@ function renderCart() {
   cartItems.innerHTML = items.map(item => {
     const id = escapeHtml(item.id);
     const name = escapeHtml(item.name);
-    const quantityControls = item.id === PAYMENT_TEST_PRODUCT_ID ? '' : `<div class="quantity"><button type="button" data-action="decrease" data-id="${id}" aria-label="Quitar una unidad de ${name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${id}" aria-label="Agregar una unidad de ${name}">+</button></div>`;
     return `
     <div class="cart-line">
-      <div><h3>${name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p>${quantityControls}<button class="remove" type="button" data-action="remove" data-id="${id}" aria-label="Eliminar ${name} del pedido">Eliminar</button></div>
+      <div><h3>${name}</h3><p>${money.format(item.price)} ${item.pricedByKilo ? '/kg · estimado por 1 kg' : 'c/u'}</p><div class="quantity"><button type="button" data-action="decrease" data-id="${id}" aria-label="Quitar una unidad de ${name}">−</button><strong>${item.quantity}</strong><button type="button" data-action="increase" data-id="${id}" aria-label="Agregar una unidad de ${name}">+</button></div><button class="remove" type="button" data-action="remove" data-id="${id}" aria-label="Eliminar ${name} del pedido">Eliminar</button></div>
       <strong>${money.format(item.price * item.quantity)}</strong>
     </div>`;
   }).join('');
 }
 
 // Barra "te faltan $X para el despacho gratis" en el resumen del carrito.
-function renderShippingProgress(total, isPaymentTest = false) {
+function renderShippingProgress(total) {
   if (!shipProgress) return;
-  shipProgress.hidden = isPaymentTest;
-  if (isPaymentTest) return;
   const reached = total >= FREE_SHIPPING_THRESHOLD;
   const percent = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
   shipProgress.classList.toggle('is-free', reached);
@@ -287,18 +278,16 @@ function readCardQuantity(input) {
   return Number.isFinite(value) ? Math.min(Math.max(value, 1), MAX_QUANTITY) : 1;
 }
 document.querySelectorAll('.product-card[data-available="true"] .add-button').forEach(button => {
-  const card = button.closest('.product-card');
-  const name = card.querySelector('h3, h1')?.textContent.trim() || 'producto';
-  const maxQuantity = card.dataset.id === PAYMENT_TEST_PRODUCT_ID ? 1 : MAX_QUANTITY;
+  const name = button.closest('.product-card').querySelector('h3, h1')?.textContent.trim() || 'producto';
   const picker = document.createElement('div');
   picker.className = 'quantity card-quantity';
-  picker.innerHTML = `<button type="button" data-step="-1" aria-label="Una unidad menos de ${escapeHtml(name)}">−</button><input type="number" inputmode="numeric" min="1" max="${maxQuantity}" value="1" aria-label="Cantidad de ${escapeHtml(name)}"><button type="button" data-step="1" aria-label="Una unidad más de ${escapeHtml(name)}">+</button>`;
+  picker.innerHTML = `<button type="button" data-step="-1" aria-label="Una unidad menos de ${escapeHtml(name)}">−</button><input type="number" inputmode="numeric" min="1" max="${MAX_QUANTITY}" value="1" aria-label="Cantidad de ${escapeHtml(name)}"><button type="button" data-step="1" aria-label="Una unidad más de ${escapeHtml(name)}">+</button>`;
   const input = picker.querySelector('input');
   picker.addEventListener('click', event => {
     const step = event.target.closest('button[data-step]');
-    if (step) input.value = Math.min(Math.max(readCardQuantity(input) + Number(step.dataset.step), 1), maxQuantity);
+    if (step) input.value = Math.min(Math.max(readCardQuantity(input) + Number(step.dataset.step), 1), MAX_QUANTITY);
   });
-  input.addEventListener('change', () => { input.value = Math.min(readCardQuantity(input), maxQuantity); });
+  input.addEventListener('change', () => { input.value = readCardQuantity(input); });
   input.addEventListener('keydown', event => { if (event.key === 'Enter') button.click(); });
   const group = document.createElement('div');
   group.className = 'card-buy';
@@ -314,17 +303,6 @@ document.querySelectorAll('.product-card[data-available="true"] .add-button').fo
     showToast('Este producto no se puede agregar en este momento. Escríbenos por WhatsApp.');
     return;
   }
-  if (id === PAYMENT_TEST_PRODUCT_ID) {
-    cart.clear();
-    const line = cartLine(id, 1);
-    cart.set(id, line);
-    persistCart();
-    renderCart();
-    showToast(`${line.name} agregado`);
-    track('add_to_cart', { currency: 'CLP', value: line.price, items: [{ item_id: id, item_name: line.name, price: line.price, quantity: 1 }] });
-    return;
-  }
-  cart.delete(PAYMENT_TEST_PRODUCT_ID);
   const input = card.querySelector('.card-quantity input');
   const requested = input ? readCardQuantity(input) : 1;
   const existing = cart.get(id);
@@ -355,7 +333,7 @@ cartItems.addEventListener('click', event => {
   if (!button) return;
   const item = cart.get(button.dataset.id);
   if (!item) return;
-  if (button.dataset.action === 'increase' && item.id !== PAYMENT_TEST_PRODUCT_ID) item.quantity = Math.min(item.quantity + 1, MAX_QUANTITY);
+  if (button.dataset.action === 'increase') item.quantity = Math.min(item.quantity + 1, MAX_QUANTITY);
   if (button.dataset.action === 'decrease') item.quantity -= 1;
   if (button.dataset.action === 'remove' || item.quantity <= 0) cart.delete(item.id);
   persistCart();
@@ -412,29 +390,24 @@ function cartEventParams(extra = {}) {
   };
 }
 function cartTotals(paymentMethod = '') {
-  const items = [...cart.values()];
-  const isPaymentTest = isPaymentTestOrder(items);
-  const products = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = isPaymentTest || products >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const products = [...cart.values()].reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = products >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = products + shipping;
-  const surcharge = paymentMethod === 'card' && !isPaymentTest ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { products, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
 }
 function updatePaymentChoice() {
   const paymentMethod = checkoutForm.elements.paymentMethod?.value || '';
   const totals = cartTotals(paymentMethod);
-  const isPaymentTest = isPaymentTestOrder([...cart.values()]);
   const transferPanel = document.querySelector('#transferPanel');
   const cardPanel = document.querySelector('#cardPanel');
   const totalPanel = document.querySelector('#checkoutTotal');
   const surchargeRow = document.querySelector('#cardSurchargeRow');
-  const cardPaymentCopy = document.querySelector('#cardPaymentCopy');
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   transferPanel.hidden = paymentMethod !== 'transfer';
   cardPanel.hidden = paymentMethod !== 'card';
   totalPanel.hidden = !paymentMethod;
-  surchargeRow.hidden = paymentMethod !== 'card' || totals.surcharge === 0;
-  cardPaymentCopy.textContent = isPaymentTest ? 'Validación productiva por un total exacto de $50.' : 'Se agrega un recargo del 3% al total del pedido.';
+  surchargeRow.hidden = paymentMethod !== 'card';
   document.querySelector('#checkoutBaseTotal').textContent = money.format(totals.baseTotal);
   document.querySelector('#cardSurcharge').textContent = money.format(totals.surcharge);
   document.querySelector('#checkoutGrandTotal').textContent = money.format(totals.total);
