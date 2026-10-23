@@ -423,15 +423,18 @@ function cartTotals(paymentMethod = '') {
 function updatePaymentChoice() {
   const paymentMethod = checkoutForm.elements.paymentMethod?.value || '';
   const totals = cartTotals(paymentMethod);
+  const isPaymentTest = isPaymentTestOrder([...cart.values()]);
   const transferPanel = document.querySelector('#transferPanel');
   const cardPanel = document.querySelector('#cardPanel');
   const totalPanel = document.querySelector('#checkoutTotal');
   const surchargeRow = document.querySelector('#cardSurchargeRow');
+  const cardPaymentCopy = document.querySelector('#cardPaymentCopy');
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   transferPanel.hidden = paymentMethod !== 'transfer';
   cardPanel.hidden = paymentMethod !== 'card';
   totalPanel.hidden = !paymentMethod;
   surchargeRow.hidden = paymentMethod !== 'card' || totals.surcharge === 0;
+  cardPaymentCopy.textContent = isPaymentTest ? 'Validación productiva por un total exacto de $50.' : 'Se agrega un recargo del 3% al total del pedido.';
   document.querySelector('#checkoutBaseTotal').textContent = money.format(totals.baseTotal);
   document.querySelector('#cardSurcharge').textContent = money.format(totals.surcharge);
   document.querySelector('#checkoutGrandTotal').textContent = money.format(totals.total);
