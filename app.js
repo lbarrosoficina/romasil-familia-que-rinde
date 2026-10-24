@@ -130,7 +130,7 @@ const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil
 const WEBPAY_API_ENDPOINT = '/api/webpay-crear';
 const WEBPAY_API_TIMEOUT_MS = 12000;
 const CARD_SURCHARGE_RATE = 0.03;
-const PAYMENT_RECEIPT_EMAIL = 'pagos@congeladosromasil.cl';
+const PAYMENT_RECEIPT_EMAIL = 'ventas@congeladosromasil.cl';
 
 function setPageRegionsInert(isInert) {
   pageRegions.forEach(region => { region.inert = isInert; });
