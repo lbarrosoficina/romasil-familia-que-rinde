@@ -3,7 +3,7 @@
 ## Fuente oficial
 
 - Este es el único repositorio activo de la web de Congelados Romasil.
-- La producción oficial es `https://congeladosromasil.cl`, alojada en Vercel.
+- La producción oficial es `https://www.congeladosromasil.cl`, alojada en Vercel.
 - El repositorio oficial es `lbarrosoficina/romasil-familia-que-rinde`, rama `main`.
 - Los archivos publicables están directamente en la raíz de este repositorio.
 - No usar `tienda-congelados`, `Congelados-Romasil` ni carpetas bajo `Propuestas/Anteriores` como fuente de producción.

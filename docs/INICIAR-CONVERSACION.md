@@ -5,13 +5,13 @@ Usar siempre el repositorio `romasil-familia-que-rinde` y la carpeta local `01 W
 ## Trabajar en la web
 
 ```text
-Trabajaremos en la web oficial de Congelados Romasil. Usa únicamente el repositorio romasil-familia-que-rinde y lee README.md, AGENTS.md y docs/WEB.md. Vercel y https://congeladosromasil.cl son la producción oficial. Acumula y prueba los cambios localmente; no crees commits ni publiques hasta que yo lo autorice expresamente.
+Trabajaremos en la web oficial de Congelados Romasil. Usa únicamente el repositorio romasil-familia-que-rinde y lee README.md, AGENTS.md y docs/WEB.md. Vercel y https://www.congeladosromasil.cl son la producción oficial. Acumula y prueba los cambios localmente; no crees commits ni publiques hasta que yo lo autorice expresamente.
 ```
 
 ## Publicar un lote
 
 ```text
-Revisa README.md, AGENTS.md y docs/WEB.md. Muéstrame todos los cambios locales y las pruebas realizadas. Después de mi autorización expresa, crea un único commit, súbelo a main y verifica el despliegue oficial en Vercel y en https://congeladosromasil.cl.
+Revisa README.md, AGENTS.md y docs/WEB.md. Muéstrame todos los cambios locales y las pruebas realizadas. Después de mi autorización expresa, crea un único commit, súbelo a main y verifica el despliegue oficial en Vercel y en https://www.congeladosromasil.cl.
 ```
 
 ## Trabajar en el correo

@@ -2,7 +2,7 @@
 
 Este repositorio contiene la versión oficial de la web de Congelados Romasil.
 
-- Producción: <https://congeladosromasil.cl/>
+- Producción: <https://www.congeladosromasil.cl/>
 - Alojamiento oficial: Vercel
 - Repositorio oficial: <https://github.com/lbarrosoficina/romasil-familia-que-rinde>
 - Rama de producción: `main`

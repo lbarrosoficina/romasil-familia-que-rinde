@@ -8,12 +8,12 @@
 Repositorio oficial de GitHub
 lbarrosoficina/romasil-familia-que-rinde · rama main
   → despliegue de producción en Vercel
-    → https://congeladosromasil.cl
+    → https://www.congeladosromasil.cl
 ```
 
 - La web que sirve Vercel es la versión oficial.
 - El código oficial se mantiene en este repositorio y está directamente en su raíz.
-- El dominio canónico e indexable es `https://congeladosromasil.cl`.
+- El dominio canónico e indexable es `https://www.congeladosromasil.cl`.
 - El repositorio histórico `lbarrosoficina/Congelados-Romasil` no es fuente de producción.
 - Las carpetas bajo `01 Web/Propuestas/Anteriores` son material histórico y no deben desplegarse.
 - Netlify no es el alojamiento oficial y no debe utilizarse para decidir cuál es la versión vigente.
@@ -26,7 +26,7 @@ lbarrosoficina/romasil-familia-que-rinde · rama main
 4. Esperar autorización expresa para publicar.
 5. Crear un único commit coherente y subirlo a `main`.
 6. Verificar que Vercel publicó el mismo commit.
-7. Comprobar `https://congeladosromasil.cl`, las páginas principales, imágenes, catálogo, carrito y navegación.
+7. Comprobar `https://www.congeladosromasil.cl`, las páginas principales, imágenes, catálogo, carrito y navegación.
 
 ## Generadores (`05 Scripts/web`, fuera de este repositorio)
 

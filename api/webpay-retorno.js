@@ -1,7 +1,7 @@
 const crypto = require('node:crypto');
 const { escapeHtml, getWebpayConfig, isValidToken, webpayHeaders } = require('./_webpay');
 
-const SITE = 'https://congeladosromasil.cl';
+const SITE = 'https://www.congeladosromasil.cl';
 const VENTAS = 'ventas@congeladosromasil.cl';
 const money = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 
