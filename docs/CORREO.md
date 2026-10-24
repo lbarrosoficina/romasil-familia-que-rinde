@@ -104,7 +104,7 @@ Cliente elige transferencia o tarjeta y confirma el pedido
 - **Catálogo del servidor:** `api/_catalogo.json` lo genera `build-productos.ps1` (vía `actualizar-web.ps1`) junto con el carrito; la verificación comprueba que sus precios coincidan.
 - **Registros:** los errores de envío quedan en los logs de la función en Vercel ("No se pudo enviar el pedido a ventas", "No se pudo enviar la confirmación al cliente").
 
-**FormSubmit (respaldo):** `https://formsubmit.co/ajax/ventas@congeladosromasil.cl` (constante `ORDER_FORM_ENDPOINT` en `app.js`). La dirección está activada para `congeladosromasil.cl`. FormSubmit exige activar cada dirección nueva por sitio: el primer envío dispara un correo de activación y hasta hacer clic no entrega pedidos.
+**FormSubmit (respaldo):** `https://formsubmit.co/ajax/ventas@congeladosromasil.cl` (constante `ORDER_FORM_ENDPOINT` en `app.js`). La dirección está activada para `congeladosromasil.cl` y, desde el 2026-10-24, para `www.congeladosromasil.cl` (dominio principal). FormSubmit exige activar cada dirección nueva por sitio: el primer envío dispara un correo de activación y hasta hacer clic no entrega pedidos.
 
 ## Pruebas recomendadas
 

@@ -581,7 +581,7 @@ function postToWebpay(payment) {
   form.submit();
 }
 
-// Respaldo: FormSubmit (dirección activada para congeladosromasil.cl; ver docs/CORREO.md).
+// Respaldo: FormSubmit (dirección activada para www.congeladosromasil.cl; ver docs/CORREO.md).
 async function sendOrderByFormSubmit(data, summary) {
   const response = await fetch(ORDER_FORM_ENDPOINT, {
     method: 'POST',
