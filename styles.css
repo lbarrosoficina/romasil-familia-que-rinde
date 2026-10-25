@@ -90,6 +90,11 @@ button{font:inherit;cursor:pointer}
 .card-quantity input{width:42px;height:36px;border:0;background:none;text-align:center;font-weight:800;font-size:16px;color:var(--ink);-moz-appearance:textfield;appearance:textfield}
 .card-quantity input::-webkit-outer-spin-button,.card-quantity input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .soon-badge{display:inline-flex;align-items:center;min-height:46px;padding:10px 20px;border-radius:var(--pill);background:var(--cream-2);color:var(--orange-text);font-weight:800;font-size:15px;margin-left:auto}
+.stock-status{display:inline-flex;align-items:center;width:max-content;margin-top:10px!important;padding:5px 10px;border-radius:999px;font-size:13px!important;font-weight:800}
+.product-info>.stock-status.is-available{background:#dcfce7;color:#166534}
+.product-info>.stock-status.is-low{background:#fef3c7;color:#92400e}
+.product-info>.stock-status.is-out{background:#fee2e2;color:#991b1b}
+.add-button:disabled,.card-quantity button:disabled,.card-quantity input:disabled{cursor:not-allowed;opacity:.55}
 
 /* Pasos */
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}

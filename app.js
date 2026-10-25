@@ -2,7 +2,24 @@
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
+const INTRANET_URL = 'https://romasil-ventas.vercel.app';
 let analyticsEnabled = false;
+
+function addIntranetLinks() {
+  document.querySelectorAll('.footer-links[aria-label="Información"]').forEach(nav => {
+    if (nav.querySelector('[data-intranet-link]')) return;
+    const link = document.createElement('a');
+    link.href = INTRANET_URL;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.dataset.intranetLink = '';
+    link.textContent = 'Intranet';
+    link.setAttribute('aria-label', 'Abrir intranet de Congelados Romasil');
+    nav.appendChild(link);
+  });
+}
+
+addIntranetLinks();
 function readConsent() {
   try { return localStorage.getItem(CONSENT_STORAGE_KEY); } catch { return null; }
 }
@@ -76,7 +93,8 @@ const CATALOG = {
   'ostion-media-concha': { name: 'Ostión con coral en media concha', price: 6900, pricedByKilo: false },
   'machas-media-concha': { name: 'Machas en media concha congeladas', price: 7900, pricedByKilo: false },
   'salmon-nacional': { name: 'Salmón nacional filete', price: 7950, pricedByKilo: false },
-  'atun-steak': { name: 'Atún steak premium', price: 2990, pricedByKilo: false }
+  'atun-steak': { name: 'Atún steak premium', price: 2990, pricedByKilo: false },
+  'producto-test': { name: 'Producto test', price: 50, pricedByKilo: false }
 };
 // </catalogo>
 const MAX_QUANTITY = 99;
@@ -131,6 +149,8 @@ const WEBPAY_API_ENDPOINT = '/api/webpay-crear';
 const WEBPAY_API_TIMEOUT_MS = 12000;
 const CARD_SURCHARGE_RATE = 0.03;
 const PAYMENT_RECEIPT_EMAIL = 'ventas@congeladosromasil.cl';
+const AVAILABILITY_API_ENDPOINT = '/api/disponibilidad';
+const productAvailability = new Map();
 
 function setPageRegionsInert(isInert) {
   pageRegions.forEach(region => { region.inert = isInert; });
@@ -205,10 +225,11 @@ function renderCart() {
   openCartButton.setAttribute('aria-label', `Abrir carrito, ${count} productos`);
   cartSummary.hidden = items.length === 0;
   cartTotal.textContent = money.format(total);
-  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const testOnly = items.length > 0 && items.every(item => item.id === 'producto-test');
+  const shipping = testOnly || total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
-  renderShippingProgress(total);
+  renderShippingProgress(total, testOnly);
   const hasKiloItems = items.some(item => item.pricedByKilo);
   cartShippingNote.hidden = !hasKiloItems;
   cartShippingNote.textContent = hasKiloItems
@@ -230,10 +251,10 @@ function renderCart() {
 }
 
 // Barra "te faltan $X para el despacho gratis" en el resumen del carrito.
-function renderShippingProgress(total) {
+function renderShippingProgress(total, testOnly = false) {
   if (!shipProgress) return;
-  const reached = total >= FREE_SHIPPING_THRESHOLD;
-  const percent = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  const reached = testOnly || total >= FREE_SHIPPING_THRESHOLD;
+  const percent = testOnly ? 100 : Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
   shipProgress.classList.toggle('is-free', reached);
   shipProgressText.innerHTML = reached
     ? '<strong>¡Tienes despacho gratis!</strong>'
@@ -307,10 +328,12 @@ document.querySelectorAll('.product-card[data-available="true"] .add-button').fo
   const requested = input ? readCardQuantity(input) : 1;
   const existing = cart.get(id);
   const previous = existing?.quantity || 0;
-  const line = cartLine(id, Math.min(previous + requested, MAX_QUANTITY));
+  const available = productAvailability.get(id)?.available;
+  const limit = Number.isFinite(available) ? Math.min(MAX_QUANTITY, Math.floor(available)) : MAX_QUANTITY;
+  const line = cartLine(id, Math.min(previous + requested, limit));
   const added = line.quantity - previous;
   if (added <= 0) {
-    showToast(`Ya tienes el máximo de ${MAX_QUANTITY} unidades de ${line.name}`);
+    showToast(Number.isFinite(available) ? `Solo quedan ${limit} unidades disponibles de ${line.name}` : `Ya tienes el máximo de ${MAX_QUANTITY} unidades de ${line.name}`);
     return;
   }
   cart.set(id, line);
@@ -320,6 +343,57 @@ document.querySelectorAll('.product-card[data-available="true"] .add-button').fo
   showToast(added === 1 ? `${line.name} agregado` : `${added} × ${line.name} agregados`);
   track('add_to_cart', { currency: 'CLP', value: line.price * added, items: [{ item_id: id, item_name: line.name, price: line.price, quantity: added }] });
 }));
+
+function applyInventoryAvailability(items) {
+  productAvailability.clear();
+  items.forEach(item => productAvailability.set(item.id, item));
+  document.querySelectorAll('.product-card[data-available="true"]').forEach(card => {
+    const item = productAvailability.get(card.dataset.id);
+    if (!item) return;
+    const available = Math.max(0, Math.floor(item.available));
+    card.dataset.stockAvailable = String(available);
+    let label = card.querySelector('.stock-status');
+    if (!label) {
+      label = document.createElement('p');
+      label.className = 'stock-status';
+      card.querySelector('.product-info')?.insertBefore(label, card.querySelector('.product-footer'));
+    }
+    label.className = `stock-status is-${item.status}`;
+    label.textContent = item.status === 'out' ? 'Agotado' : item.status === 'low' ? `Pocas unidades (${available})` : 'Disponible';
+    const addButton = card.querySelector('.add-button');
+    if (addButton) {
+      addButton.disabled = available <= 0;
+      addButton.textContent = available <= 0 ? 'Agotado' : addButton.closest('.product-detail') ? 'Agregar al pedido' : 'Agregar';
+    }
+    const quantityInput = card.querySelector('.card-quantity input');
+    if (quantityInput) {
+      quantityInput.max = String(Math.max(1, Math.min(MAX_QUANTITY, available)));
+      quantityInput.disabled = available <= 0;
+    }
+    card.querySelectorAll('.card-quantity button').forEach(button => { button.disabled = available <= 0; });
+  });
+  let changed = false;
+  for (const [id, line] of cart) {
+    const item = productAvailability.get(id);
+    if (!item) continue;
+    const available = Math.max(0, Math.floor(item.available));
+    if (available <= 0) { cart.delete(id); changed = true; }
+    else if (line.quantity > available) { line.quantity = available; changed = true; }
+  }
+  if (changed) { persistCart(); renderCart(); showToast('Actualizamos tu carrito según el stock disponible'); }
+}
+
+async function loadInventoryAvailability() {
+  try {
+    const response = await fetch(AVAILABILITY_API_ENDPOINT, { headers: { Accept: 'application/json' } });
+    const result = await response.json().catch(() => null);
+    if (response.ok && result?.ok && Array.isArray(result.items)) applyInventoryAvailability(result.items);
+  } catch (error) {
+    console.warn('No se pudo actualizar la disponibilidad del inventario', error);
+  }
+}
+
+void loadInventoryAvailability();
 // Aviso para quien mantiene la web: un precio de la página distinto al de CATALOG indica que falta volver a generar.
 document.querySelectorAll('.product-card[data-available="true"]').forEach(card => {
   const product = CATALOG[card.dataset.id];
@@ -333,7 +407,11 @@ cartItems.addEventListener('click', event => {
   if (!button) return;
   const item = cart.get(button.dataset.id);
   if (!item) return;
-  if (button.dataset.action === 'increase') item.quantity = Math.min(item.quantity + 1, MAX_QUANTITY);
+  if (button.dataset.action === 'increase') {
+    const available = productAvailability.get(item.id)?.available;
+    const limit = Number.isFinite(available) ? Math.min(MAX_QUANTITY, Math.floor(available)) : MAX_QUANTITY;
+    item.quantity = Math.min(item.quantity + 1, limit);
+  }
   if (button.dataset.action === 'decrease') item.quantity -= 1;
   if (button.dataset.action === 'remove' || item.quantity <= 0) cart.delete(item.id);
   persistCart();
@@ -361,7 +439,7 @@ navToggle?.addEventListener('click', () => {
   primaryNav.classList.toggle('is-open', willOpen);
 });
 primaryNav?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => closeNavigation()));
-openCartButton.addEventListener('click', openCart);
+openCartButton.addEventListener('click', () => { openCart(); void loadInventoryAvailability(); });
 closeCartButton.addEventListener('click', () => closeCart());
 backdrop.addEventListener('click', closeCart);
 document.addEventListener('keydown', event => {
@@ -390,10 +468,12 @@ function cartEventParams(extra = {}) {
   };
 }
 function cartTotals(paymentMethod = '') {
-  const products = [...cart.values()].reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = products >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const items = [...cart.values()];
+  const products = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const testOnly = items.length > 0 && items.every(item => item.id === 'producto-test');
+  const shipping = testOnly || products >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = products + shipping;
-  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = paymentMethod === 'card' && !testOnly ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { products, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
 }
 function updatePaymentChoice() {
@@ -541,7 +621,7 @@ async function sendOrderByResend(data, orderNumber) {
     });
     const result = await response.json().catch(() => null);
     if (response.ok && result?.ok) return { status: 'ok', orderNumber: result.pedido || '' };
-    if (response.status === 400 && result?.error) return { status: 'invalid', message: result.error };
+    if ((response.status === 400 || result?.code === 'INTRANET_UNAVAILABLE') && result?.error) return { status: 'invalid', message: result.error };
     throw new Error(result?.error || `La función de pedidos respondió con estado ${response.status}`);
   } finally {
     window.clearTimeout(timer);

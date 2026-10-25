@@ -1,5 +1,6 @@
 const crypto = require('node:crypto');
 const { escapeHtml, getWebpayConfig, isValidToken, webpayHeaders } = require('./_webpay');
+const { sendIntranetEvent } = require('./_intranet');
 
 const SITE = 'https://www.congeladosromasil.cl';
 const VENTAS = 'ventas@congeladosromasil.cl';
@@ -19,11 +20,12 @@ function resultPage({ approved, title, message, transaction }) {
   <body data-payment-result="${approved ? 'success' : 'failure'}"><main class="payment-result"><section class="payment-result-card ${statusClass}"><img src="/assets/romasil-logo-horizontal.png" width="180" height="56" alt="Congelados Romasil"><div class="payment-result-icon" aria-hidden="true">${approved ? '✓' : '!'}</div><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p>${details}<div class="payment-result-actions"><a class="button primary" href="/">Volver al inicio</a>${approved ? '' : '<a class="button secondary" href="/productos.html">Volver al carrito</a>'}</div><p class="form-note">¿Necesitas ayuda? Escríbenos a <a href="mailto:ventas@congeladosromasil.cl">ventas@congeladosromasil.cl</a>.</p></section></main><script src="/pago.js"></script></body></html>`;
 }
 
-async function notifySales(transaction) {
+async function notifySales(transaction, integrationRegistered = true) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return;
   const tokenHash = crypto.createHash('sha256').update(String(transaction.token || '')).digest('hex').slice(0, 24);
-  const text = `Pago Webpay autorizado\n\nPedido: ${transaction.buy_order}\nMonto: ${money.format(Number(transaction.amount))}\nCódigo de autorización: ${transaction.authorization_code}\nTipo de pago: ${transaction.payment_type_code}\nÚltimos 4 dígitos: ${transaction.card_detail?.card_number || 'No informado'}\nFecha Transbank: ${transaction.transaction_date}`;
+  const warning = integrationRegistered ? '' : '\n\nATENCIÓN: el pago no pudo convertirse automáticamente en venta. Revisar y conciliar manualmente en la intranet.';
+  const text = `Pago Webpay autorizado\n\nPedido: ${transaction.buy_order}\nMonto: ${money.format(Number(transaction.amount))}\nCódigo de autorización: ${transaction.authorization_code}\nTipo de pago: ${transaction.payment_type_code}\nÚltimos 4 dígitos: ${transaction.card_detail?.card_number || 'No informado'}\nFecha Transbank: ${transaction.transaction_date}${warning}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
@@ -33,7 +35,7 @@ async function notifySales(transaction) {
       body: JSON.stringify({
         from: 'Pagos Romasil <ventas@congeladosromasil.cl>',
         to: [VENTAS],
-        subject: `Pago Webpay autorizado · ${transaction.buy_order} · ${money.format(Number(transaction.amount))}`,
+        subject: `${integrationRegistered ? '' : 'REVISAR · '}Pago Webpay autorizado · ${transaction.buy_order} · ${money.format(Number(transaction.amount))}`,
         text
       }),
       signal: controller.signal
@@ -94,7 +96,24 @@ async function handler(req, res) {
     }
     const approved = transaction.status === 'AUTHORIZED' && Number(transaction.response_code) === 0;
     if (approved) {
-      try { await notifySales(transaction); } catch (emailError) { console.error('No se pudo avisar el pago por correo', emailError); }
+      let integrationRegistered = true;
+      try {
+        await sendIntranetEvent({
+          event: 'payment.authorized',
+          data: {
+            orderNumber: transaction.buy_order,
+            amount: Number(transaction.amount),
+            authorizationCode: String(transaction.authorization_code || ''),
+            paymentTypeCode: String(transaction.payment_type_code || ''),
+            transactionDate: String(transaction.transaction_date || '')
+          }
+        });
+      } catch (integrationError) {
+        integrationRegistered = false;
+        // El cobro ya fue autorizado: nunca se le indica al cliente que pague otra vez.
+        console.error('Pago autorizado, pero no se pudo convertir el pedido en venta', transaction.buy_order, integrationError);
+      }
+      try { await notifySales(transaction, integrationRegistered); } catch (emailError) { console.error('No se pudo avisar el pago por correo', emailError); }
       return res.status(200).send(resultPage({ approved: true, title: '¡Pago realizado con éxito!', message: 'Recibimos tu pago. Te contactaremos para coordinar la entrega de tu pedido.', transaction }));
     }
     return res.status(200).send(resultPage({ approved: false, title: 'Pago no autorizado', message: 'Webpay no autorizó la transacción. No se realizó ningún cobro y puedes intentarlo nuevamente.' }));

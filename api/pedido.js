@@ -4,6 +4,7 @@
 // Si esta función falla, app.js envía el pedido por FormSubmit como respaldo.
 // Necesita la variable de entorno RESEND_API_KEY en Vercel; la clave nunca va en el código.
 const CATALOG = require('./_catalogo.json');
+const { sendIntranetEvent } = require('./_intranet');
 
 const VENTAS = 'ventas@congeladosromasil.cl';
 const FROM_VENTAS = 'Pedidos web Romasil <ventas@congeladosromasil.cl>';
@@ -56,9 +57,10 @@ function validarPedido(body) {
 
   const lineas = [...cantidades].map(([id, quantity]) => ({ id, quantity, ...CATALOG[id], subtotal: CATALOG[id].price * quantity }));
   const subtotal = lineas.reduce((sum, line) => sum + line.subtotal, 0);
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const testOnly = lineas.every(line => line.id === 'producto-test');
+  const shipping = testOnly || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = subtotal + shipping;
-  const surcharge = paymentMethod === 'card' ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = paymentMethod === 'card' && !testOnly ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { pedido: { cliente, phoneDigits, lineas, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge, paymentMethod, porKilo: lineas.some(line => line.pricedByKilo) } };
 }
 
@@ -211,12 +213,31 @@ async function handler(req, res) {
   const numeroSolicitado = String(body.orderNumber || '').toUpperCase();
   const numero = ORDER_PATTERN.test(numeroSolicitado) ? numeroSolicitado : numeroPedido(ahora);
   try {
+    await sendIntranetEvent({
+      event: 'order.created',
+      data: {
+        orderNumber: numero,
+        customer: pedido.cliente,
+        paymentMethod: pedido.paymentMethod,
+        items: pedido.lineas.map(line => ({ sku: line.inventorySku, name: line.name, quantity: line.quantity, unitPrice: line.price })),
+        subtotal: pedido.subtotal,
+        shipping: pedido.shipping,
+        surcharge: pedido.surcharge,
+        total: pedido.total
+      }
+    });
+  } catch (error) {
+    console.error('No se pudo registrar el pedido en la intranet', numero, error);
+    return res.status(503).json({ ok: false, code: 'INTRANET_UNAVAILABLE', error: 'No pudimos reservar el stock de tu pedido. Inténtalo nuevamente en unos minutos.' });
+  }
+  let avisoVentas = true;
+  try {
     await enviarCorreo(apiKey, correoVentas(pedido, numero, fechaChile(ahora)), `${numero}-ventas`);
   } catch (error) {
+    avisoVentas = false;
     console.error('No se pudo enviar el pedido a ventas', numero, error);
-    return res.status(502).json({ ok: false, error: 'No pudimos registrar la solicitud por correo.' });
   }
-  // La confirmación al cliente no bloquea el pedido: ventas ya lo recibió.
+  // Los correos no bloquean: la intranet ya dejó el pedido registrado y con stock reservado.
   let confirmacion = true;
   try {
     await enviarCorreo(apiKey, correoCliente(pedido, numero), `${numero}-cliente`);
@@ -224,7 +245,7 @@ async function handler(req, res) {
     confirmacion = false;
     console.error('No se pudo enviar la confirmación al cliente', numero, error);
   }
-  return res.status(200).json({ ok: true, pedido: numero, confirmacion });
+  return res.status(200).json({ ok: true, pedido: numero, avisoVentas, confirmacion });
 }
 
 module.exports = handler;

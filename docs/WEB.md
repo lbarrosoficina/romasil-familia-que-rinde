@@ -1,6 +1,6 @@
 # Operación de la web oficial
 
-Última actualización: 13 de octubre de 2026.
+Última actualización: 25 de octubre de 2026.
 
 ## Fuente de verdad
 
@@ -93,6 +93,21 @@ No se permite código en línea (`<script>` sin `src`, `onload=`, `onclick=`); `
 
 Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario), hay que añadir su dominio a la directiva que corresponda o el navegador lo bloqueará. El servidor local `05 Scripts/web/serve.ps1` aplica las mismas cabeceras de `vercel.json`, así que los bloqueos se ven en la consola antes de publicar.
 
+## Integración con ventas e inventario
+
+`/api/pedido` registra cada compra como preventa en `romasil-ventas` antes de confirmar el pedido al navegador. El catálogo privado `api/_catalogo.json` relaciona cada producto web con el SKU estable del inventario.
+
+La web consulta `/api/disponibilidad`, que actúa como intermediario hacia el endpoint público de solo lectura de la intranet. La disponibilidad corresponde al stock físico menos las unidades de preventas reservadas, se conserva en caché por 15 segundos y nunca expone credenciales. El catálogo marca productos disponibles, con pocas unidades o agotados; el carrito impide superar las unidades disponibles. Si la consulta falla, la web sigue operativa y `/api/pedido` vuelve a validar el stock antes de aceptar la compra.
+
+- Transferencia: reserva stock y queda como preventa hasta que administración confirma el pago en la intranet.
+- Webpay: reserva stock antes de enviar al cliente a Transbank; cuando `/api/webpay-retorno` recibe una autorización, convierte la preventa en venta, la marca pagada y descuenta stock.
+- El número de pedido hace la operación idempotente: los reintentos no crean otra preventa ni otra venta.
+- La comunicación es servidor a servidor y firma el cuerpo con HMAC SHA-256. `INTRANET_WEBHOOK_SECRET` en este proyecto debe ser idéntico a `WEB_ORDER_SECRET` en `romasil-ventas`; nunca se expone en `app.js` ni se guarda con un valor real en Git.
+- `INTRANET_API_URL` apunta a la URL pública de la intranet, normalmente `https://romasil-ventas.vercel.app`.
+- `producto-test` usa el SKU `WEB-TEST-050` y cobra exactamente $50 cuando se compra solo, sin despacho ni recargo. Su ficha lleva `noindex` y se excluye del feed de Merchant Center; sirve únicamente para probar el flujo completo.
+
+Si no se puede reservar stock o contactar la intranet, el checkout se detiene antes de abrir Webpay y muestra un mensaje para reintentar. Si Transbank ya autorizó el cobro y la actualización de la intranet falla, el retorno conserva el resultado exitoso para evitar un segundo pago y deja el error en los logs para su conciliación.
+
 ## Comprobaciones posteriores a la publicación
 
 - La portada y el catálogo cargan sin errores.
@@ -100,6 +115,7 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 - El carrito permite agregar, ajustar y quitar productos.
 - El checkout permite elegir transferencia o tarjeta. La transferencia muestra la cuenta corriente y los canales para enviar el comprobante; la tarjeta suma un 3 % y abre Webpay.
 - El checkout registra el pedido por correo y conserva el carrito si el pago no se completa.
+- El pedido aparece una sola vez como preventa en la intranet; Webpay autorizado lo convierte en venta pagada.
 - El retorno de Webpay confirma en el servidor el estado, monto, orden y código de autorización.
 - `robots.txt`, `sitemap.xml`, canonical, Open Graph y datos estructurados usan el dominio principal.
 - La versión publicada coincide con los archivos de este repositorio.
@@ -115,5 +131,6 @@ Si se agrega un servicio externo (un mapa incrustado, un widget, otro formulario
 | El formulario no envía | Consola del navegador, Resend, FormSubmit y activación del destinatario |
 | Webpay no abre | Variables `TRANSBANK_*`, `PUBLIC_SITE_URL`, respuesta de `/api/webpay-crear` y CSP de Vercel |
 | El retorno no confirma | Logs de `/api/webpay-retorno`, ambiente configurado y URL pública HTTPS |
+| El pedido no llega a la intranet | `INTRANET_API_URL`, secreto compartido, logs de `/api/pedido` y stock disponible |
 
 Antes de modificar DNS o correo, revisar [CORREO.md](CORREO.md).

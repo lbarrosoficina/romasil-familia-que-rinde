@@ -1,13 +1,14 @@
 {
-  "filetillo-pollo": {"name": "Filetito de pollo congelado", "price": 5700, "pricedByKilo": false},
-  "trutro-largo-pollo": {"name": "Trutro largo de pollo congelado", "price": 3300, "pricedByKilo": false},
-  "pechuga-pollo": {"name": "Pechuga deshuesada de pollo", "price": 5290, "pricedByKilo": false},
-  "malaya-cerdo": {"name": "Malaya de cerdo", "price": 13000, "pricedByKilo": false},
-  "camaron-ecuatoriano": {"name": "Camarón ecuatoriano con cáscara 36/40", "price": 10350, "pricedByKilo": false},
-  "camaron-sin-cascara": {"name": "Camarón ecuatoriano sin cáscara 36/40", "price": 11600, "pricedByKilo": false},
-  "ostion-sin-coral": {"name": "Ostión sin coral 20/40", "price": 11900, "pricedByKilo": false},
-  "ostion-media-concha": {"name": "Ostión con coral en media concha", "price": 6900, "pricedByKilo": false},
-  "machas-media-concha": {"name": "Machas en media concha congeladas", "price": 7900, "pricedByKilo": false},
-  "salmon-nacional": {"name": "Salmón nacional filete", "price": 7950, "pricedByKilo": false},
-  "atun-steak": {"name": "Atún steak premium", "price": 2990, "pricedByKilo": false}
+  "filetillo-pollo": {"name": "Filetito de pollo congelado", "price": 5700, "pricedByKilo": false, "inventorySku": "CAR-POL-FIL"},
+  "trutro-largo-pollo": {"name": "Trutro largo de pollo congelado", "price": 3300, "pricedByKilo": false, "inventorySku": "CAR-POL-TRL"},
+  "pechuga-pollo": {"name": "Pechuga deshuesada de pollo", "price": 5290, "pricedByKilo": false, "inventorySku": "CAR-POL-PEC"},
+  "malaya-cerdo": {"name": "Malaya de cerdo", "price": 13000, "pricedByKilo": false, "inventorySku": "CAR-CER-MAL"},
+  "camaron-ecuatoriano": {"name": "Camarón ecuatoriano con cáscara 36/40", "price": 10350, "pricedByKilo": false, "inventorySku": "MAR-CAM-CCA"},
+  "camaron-sin-cascara": {"name": "Camarón ecuatoriano sin cáscara 36/40", "price": 11600, "pricedByKilo": false, "inventorySku": "MAR-CAM-SCA"},
+  "ostion-sin-coral": {"name": "Ostión sin coral 20/40", "price": 11900, "pricedByKilo": false, "inventorySku": "MAR-OST-SCO"},
+  "ostion-media-concha": {"name": "Ostión con coral en media concha", "price": 6900, "pricedByKilo": false, "inventorySku": "MAR-OST-MCO"},
+  "machas-media-concha": {"name": "Machas en media concha congeladas", "price": 7900, "pricedByKilo": false, "inventorySku": "MAR-MAC-MCO"},
+  "salmon-nacional": {"name": "Salmón nacional filete", "price": 7950, "pricedByKilo": false, "inventorySku": "PES-SAL-FIL"},
+  "atun-steak": {"name": "Atún steak premium", "price": 2990, "pricedByKilo": false, "inventorySku": "PES-ATU-STK"},
+  "producto-test": {"name": "Producto test", "price": 50, "pricedByKilo": false, "inventorySku": "WEB-TEST-050"}
 }

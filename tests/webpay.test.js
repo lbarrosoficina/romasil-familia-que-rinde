@@ -33,6 +33,20 @@ test('calcula en el servidor el recargo de 3% para tarjeta', () => {
   assert.equal(order.total, 9476);
 });
 
+test('el producto test cobra exactamente $50 sin despacho ni recargo', () => {
+  const order = calculateOrder([{ id: 'producto-test', quantity: 1 }], { cardSurcharge: true });
+  assert.equal(order.subtotal, 50);
+  assert.equal(order.shipping, 0);
+  assert.equal(order.surcharge, 0);
+  assert.equal(order.total, 50);
+  const checkout = validarPedido({
+    name: 'Cliente Prueba', phone: '+56 9 1234 5678', email: 'cliente@example.cl',
+    addressLine1: 'Av. Providencia 123', commune: 'Providencia', privacyConsent: true,
+    paymentMethod: 'card', items: [{ id: 'producto-test', quantity: 1 }]
+  }).pedido;
+  assert.equal(checkout.total, 50);
+});
+
 test('el pedido distingue transferencia y tarjeta al calcular el total', () => {
   const base = {
     name: 'Cliente Prueba', phone: '+56 9 1234 5678', email: 'cliente@example.cl',

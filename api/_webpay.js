@@ -25,9 +25,10 @@ function calculateOrder(items, { cardSurcharge = false } = {}) {
     subtotal: CATALOG[id].price * quantity
   }));
   const subtotal = products.reduce((sum, product) => sum + product.subtotal, 0);
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const testOnly = products.every(product => product.id === 'producto-test');
+  const shipping = testOnly || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const baseTotal = subtotal + shipping;
-  const surcharge = cardSurcharge ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
+  const surcharge = cardSurcharge && !testOnly ? Math.round(baseTotal * CARD_SURCHARGE_RATE) : 0;
   return { products, subtotal, shipping, baseTotal, surcharge, total: baseTotal + surcharge };
 }
 
