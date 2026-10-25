@@ -2,7 +2,7 @@
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
-const INTRANET_URL = 'https://romasil-ventas.vercel.app';
+const INTRANET_URL = 'https://intranet.congeladosromasil.cl';
 let analyticsEnabled = false;
 
 function addIntranetLinks() {
