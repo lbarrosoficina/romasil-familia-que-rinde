@@ -1,6 +1,24 @@
 // Google Analytics 4: solo se carga si la persona acepta la analítica en el aviso de cookies (ver politica-de-privacidad.html#cookies).
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
+// Prueba A/B: mismo sitio y contenido para todos; en la versión B el pago se hace en la tienda nueva.
+// Cada visitante queda en A o B al azar y lo mantiene. Para revisar: ?version=A o ?version=B.
+const AB_STORAGE_KEY = 'romasil-ab';
+const AB_CART_URL = 'https://romasil-stock-buddy.lovable.app/carro';
+const AB_SKU = {
+  'filetillo-pollo': 'CAR-POL-FIL', 'trutro-largo-pollo': 'CAR-POL-TRL', 'pechuga-pollo': 'CAR-POL-PEC', 'malaya-cerdo': 'CAR-CER-MAL',
+  'camaron-ecuatoriano': 'MAR-CAM-CCA', 'camaron-sin-cascara': 'MAR-CAM-SCA', 'ostion-sin-coral': 'MAR-OST-SCO', 'ostion-media-concha': 'MAR-OST-MCO',
+  'machas-media-concha': 'MAR-MAC-MCO', 'salmon-nacional': 'PES-SAL-FIL', 'atun-steak': 'PES-ATU-STK'
+};
+const AB_VERSION = (() => {
+  const forced = new URLSearchParams(location.search).get('version')?.toUpperCase();
+  let saved = null;
+  try { saved = localStorage.getItem(AB_STORAGE_KEY); } catch { /* sin almacenamiento */ }
+  const version = forced === 'A' || forced === 'B' ? forced : saved === 'A' || saved === 'B' ? saved : (Math.random() < 0.5 ? 'A' : 'B');
+  try { localStorage.setItem(AB_STORAGE_KEY, version); } catch { /* sin almacenamiento: se sortea en cada visita */ }
+  return version;
+})();
+
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
 const INTRANET_URL = 'https://intranet.congeladosromasil.cl';
 let analyticsEnabled = false;
@@ -33,7 +51,7 @@ function enableAnalytics() {
   window.gtag = function gtag() { window.dataLayer.push(arguments); };
   window.gtag('js', new Date());
   // Solo medición: sin señales de Google ni personalización de anuncios (la política de privacidad no cubre fines publicitarios).
-  window.gtag('config', GA_MEASUREMENT_ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
+  window.gtag('config', GA_MEASUREMENT_ID, { allow_google_signals: false, allow_ad_personalization_signals: false, ab_variante: AB_VERSION });
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -451,6 +469,12 @@ document.addEventListener('keydown', event => {
 document.querySelector('#checkoutButton').addEventListener('click', () => {
   closeCart({ restoreFocus: false });
   track('begin_checkout', cartEventParams());
+  // Versión B: el carro pasa a la tienda nueva con los mismos productos y cantidades (por SKU).
+  const abItems = [...cart.values()].filter(item => AB_SKU[item.id]).map(item => `${AB_SKU[item.id]}:${item.quantity}`);
+  if (AB_VERSION === 'B' && abItems.length) {
+    location.href = `${AB_CART_URL}?items=${encodeURIComponent(abItems.join(','))}`;
+    return;
+  }
   updatePaymentChoice();
   checkoutDialog.showModal();
   checkoutForm.elements.name.focus();
