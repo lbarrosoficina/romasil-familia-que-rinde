@@ -20,7 +20,7 @@ const AB_VERSION = (() => {
 })();
 
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
-const INTRANET_URL = 'https://intranet.congeladosromasil.cl';
+const INTRANET_URL = 'https://romasil-ventas.vercel.app';
 let analyticsEnabled = false;
 
 function addIntranetLinks() {
