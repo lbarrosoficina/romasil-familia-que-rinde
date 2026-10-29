@@ -19,6 +19,22 @@ const AB_VERSION = (() => {
   return version;
 })();
 
+// Fotos: la app de administración (intranet) es la fuente. Si se cambia una foto allá, aquí se ve la nueva.
+// Si la app no responde, se quedan las fotos de esta web.
+const PHOTOS_URL = 'https://intranet.congeladosromasil.cl/api/public/fotos';
+const PHOTO_SKU = {
+  'filetillo-pollo': 'CAR-POL-FIL', 'trutro-largo-pollo': 'CAR-POL-TRL', 'pechuga-pollo': 'CAR-POL-PEC', 'malaya-cerdo': 'CAR-CER-MAL',
+  'camaron-ecuatoriano': 'MAR-CAM-CCA', 'camaron-sin-cascara': 'MAR-CAM-SCA', 'ostion-sin-coral': 'MAR-OST-SCO', 'ostion-media-concha': 'MAR-OST-MCO',
+  'machas-media-concha': 'MAR-MAC-MCO', 'salmon-nacional': 'PES-SAL-FIL', 'atun-steak': 'PES-ATU-STK'
+};
+fetch(PHOTOS_URL).then(r => (r.ok ? r.json() : {})).then(fotos => {
+  document.querySelectorAll('.product-card[data-id]').forEach(card => {
+    const url = fotos[PHOTO_SKU[card.dataset.id]];
+    const img = card.querySelector('.product-art img');
+    if (url && img && img.src !== url) img.src = url;
+  });
+}).catch(() => { /* sin conexión con la app: quedan las fotos de la web */ });
+
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
 const INTRANET_URL = 'https://romasil-ventas.vercel.app';
 let analyticsEnabled = false;

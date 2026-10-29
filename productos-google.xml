@@ -210,7 +210,7 @@
     </item>
     <item>
       <g:id>atun-steak</g:id>
-      <g:title>Atún steak premium congelado 230 g</g:title>
+      <g:title>Atún steak premium congelado 240 g aprox.</g:title>
       <g:description>Porciones de atún premium congelado, listas para preparar a la plancha, al horno o en sartén.</g:description>
       <g:link>https://www.congeladosromasil.cl/atun-steak-congelado.html</g:link>
       <g:image_link>https://www.congeladosromasil.cl/assets/product-atun-steak-v1.webp</g:image_link>
@@ -221,11 +221,11 @@
       <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Meat, Seafood &amp; Eggs &gt; Seafood &gt; Fresh &amp; Frozen Seafood</g:google_product_category>
       <g:product_type>Pescados &gt; Atún</g:product_type>
-      <g:product_highlight>Formato: Steak de 230 g, sellado al vacío</g:product_highlight>
+      <g:product_highlight>Formato: Steak de 240 g aprox., sellado al vacío</g:product_highlight>
       <g:product_highlight>Ideal para: Plancha, horno, sartén y preparaciones selladas</g:product_highlight>
       <g:product_highlight>Conservación: congelado a -18 °C o menos</g:product_highlight>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Corte</g:attribute_name><g:attribute_value>Steak</g:attribute_value></g:product_detail>
-      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>230 g</g:attribute_value></g:product_detail>
+      <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Peso</g:attribute_name><g:attribute_value>240 g aprox.</g:attribute_value></g:product_detail>
       <g:product_detail><g:section_name>Información del producto</g:section_name><g:attribute_name>Envase</g:attribute_name><g:attribute_value>Sellado al vacío</g:attribute_value></g:product_detail>
     </item>
   </channel>
