@@ -289,8 +289,12 @@ function renderCart() {
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
   if (AB_FIXED_CART) {
+    // Versión B: el despacho se calcula recién con la dirección (solo Providencia, Ñuñoa y Las Condes).
+    cartShipping.textContent = 'Según tu dirección';
+    cartGrandTotal.textContent = money.format(total);
+    cartGrandTotal.previousElementSibling.textContent = 'Total productos';
     abBar.hidden = count === 0;
-    abBar.innerHTML = `<span>Tu pedido · ${count} ${count === 1 ? 'producto' : 'productos'} · <strong>${money.format(total + shipping)}</strong></span><span class="ab-cart-go">Ir al pago →</span>`;
+    abBar.innerHTML = `<span>Tu pedido · ${count} ${count === 1 ? 'producto' : 'productos'} · <strong>${money.format(total)}</strong></span><span class="ab-cart-go">Ir al pago →</span>`;
   }
   renderShippingProgress(total, testOnly);
   const hasKiloItems = items.some(item => item.pricedByKilo);
