@@ -30,7 +30,7 @@ fetch(PHOTOS_URL).then(r => (r.ok ? r.json() : {})).then(fotos => {
 }).catch(() => { /* sin conexión con la app: quedan las fotos de la web */ });
 
 const CONSENT_STORAGE_KEY = 'romasil-analytics-consent';
-const INTRANET_URL = 'https://romasil-ventas.vercel.app';
+const INTRANET_URL = 'https://intranet.congeladosromasil.cl';
 let analyticsEnabled = false;
 
 function addIntranetLinks() {
