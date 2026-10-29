@@ -1,7 +1,7 @@
 // Google Analytics 4: solo se carga si la persona acepta la analítica en el aviso de cookies (ver politica-de-privacidad.html#cookies).
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
-// Prueba A/B: mismo sitio y contenido para todos; en la versión B el carro está siempre a la vista.
+// Prueba A/B: A es esta web; B es la tienda nueva (intranet.congeladosromasil.cl), con el mismo stock y los mismos productos.
 // Cada visitante queda en A o B al azar y lo mantiene. Para revisar: ?version=A o ?version=B.
 const AB_STORAGE_KEY = 'romasil-ab';
 const AB_VERSION = (() => {
@@ -12,6 +12,13 @@ const AB_VERSION = (() => {
   try { localStorage.setItem(AB_STORAGE_KEY, version); } catch { /* sin almacenamiento: se sortea en cada visita */ }
   return version;
 })();
+// Buscadores (Google, Bing…) siempre ven A, para no afectar el posicionamiento.
+if (AB_VERSION === 'B' && !/bot|crawl|spider|slurp|google|bing|lighthouse|facebookexternalhit|whatsapp/i.test(navigator.userAgent)) {
+  const params = new URLSearchParams(location.search);
+  params.delete('version');
+  params.set('ab', 'B');
+  location.replace(`https://intranet.congeladosromasil.cl/?${params}`);
+}
 
 // Fotos: la app de administración (intranet) es la fuente. Si se cambia una foto allá, aquí se ve la nueva.
 // Si la app no responde, se quedan las fotos de esta web.
@@ -166,29 +173,6 @@ const primaryNav = document.querySelector('#primaryNav');
 const checkoutForm = document.querySelector('#checkoutForm');
 const formStatus = document.querySelector('#formStatus');
 const pageRegions = document.querySelectorAll('body > header, body > main, body > footer');
-// Prueba A/B: en B el carro está siempre a la vista (panel fijo en pantallas anchas, barra abajo en celular).
-const AB_FIXED_CART = AB_VERSION === 'B';
-const abWide = window.matchMedia('(min-width: 1100px)');
-const abPinned = () => AB_FIXED_CART && abWide.matches;
-const abBar = document.createElement('button');
-abBar.type = 'button';
-abBar.className = 'ab-cart-bar';
-abBar.hidden = true;
-abBar.addEventListener('click', () => document.querySelector('#checkoutButton')?.click());
-function abPin() {
-  if (!AB_FIXED_CART) return;
-  const on = abWide.matches;
-  drawer.inert = !on;
-  drawer.setAttribute('aria-hidden', String(!on));
-  drawer.setAttribute('role', on ? 'region' : 'dialog');
-  drawer.setAttribute('aria-modal', String(!on));
-}
-if (AB_FIXED_CART) {
-  document.documentElement.classList.add('ab-b');
-  document.body.append(abBar);
-  abPin();
-  abWide.addEventListener('change', abPin);
-}
 const WHATSAPP_NUMBER = '56962319733';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
@@ -223,7 +207,6 @@ function showToast(message) {
 }
 
 function openCart() {
-  if (abPinned()) { drawer.focus(); return; }
   closeNavigation();
   drawer.classList.add('open');
   drawer.inert = false;
@@ -244,7 +227,6 @@ function closeCart({ restoreFocus = true } = {}) {
   document.body.style.overflow = '';
   setPageRegionsInert(false);
   if (restoreFocus) openCartButton.focus();
-  abPin();
 }
 
 function closeNavigation({ restoreFocus = false } = {}) {
@@ -282,14 +264,6 @@ function renderCart() {
   const shipping = testOnly || total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
-  if (AB_FIXED_CART) {
-    // Versión B: el despacho se calcula recién con la dirección (solo Providencia, Ñuñoa y Las Condes).
-    cartShipping.textContent = 'Según tu dirección';
-    cartGrandTotal.textContent = money.format(total);
-    cartGrandTotal.previousElementSibling.textContent = 'Total productos';
-    abBar.hidden = count === 0;
-    abBar.innerHTML = `<span>Tu pedido · ${count} ${count === 1 ? 'producto' : 'productos'} · <strong>${money.format(total)}</strong></span><span class="ab-cart-go">Ir al pago →</span>`;
-  }
   renderShippingProgress(total, testOnly);
   const hasKiloItems = items.some(item => item.pricedByKilo);
   cartShippingNote.hidden = !hasKiloItems;
