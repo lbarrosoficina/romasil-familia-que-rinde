@@ -1,15 +1,9 @@
 // Google Analytics 4: solo se carga si la persona acepta la analítica en el aviso de cookies (ver politica-de-privacidad.html#cookies).
 // track() no hace nada mientras no haya consentimiento, así que se puede llamar desde cualquier parte sin condiciones.
 const GA_MEASUREMENT_ID = 'G-E6KL5QF5LN';
-// Prueba A/B: mismo sitio y contenido para todos; en la versión B el pago se hace en la tienda nueva.
+// Prueba A/B: mismo sitio y contenido para todos; en la versión B el carro está siempre a la vista.
 // Cada visitante queda en A o B al azar y lo mantiene. Para revisar: ?version=A o ?version=B.
 const AB_STORAGE_KEY = 'romasil-ab';
-const AB_CART_URL = 'https://romasil-stock-buddy.lovable.app/carro';
-const AB_SKU = {
-  'filetillo-pollo': 'CAR-POL-FIL', 'trutro-largo-pollo': 'CAR-POL-TRL', 'pechuga-pollo': 'CAR-POL-PEC', 'malaya-cerdo': 'CAR-CER-MAL',
-  'camaron-ecuatoriano': 'MAR-CAM-CCA', 'camaron-sin-cascara': 'MAR-CAM-SCA', 'ostion-sin-coral': 'MAR-OST-SCO', 'ostion-media-concha': 'MAR-OST-MCO',
-  'machas-media-concha': 'MAR-MAC-MCO', 'salmon-nacional': 'PES-SAL-FIL', 'atun-steak': 'PES-ATU-STK'
-};
 const AB_VERSION = (() => {
   const forced = new URLSearchParams(location.search).get('version')?.toUpperCase();
   let saved = null;
@@ -518,12 +512,6 @@ document.addEventListener('keydown', event => {
 document.querySelector('#checkoutButton').addEventListener('click', () => {
   closeCart({ restoreFocus: false });
   track('begin_checkout', cartEventParams());
-  // Versión B: el carro pasa a la tienda nueva con los mismos productos y cantidades (por SKU).
-  const abItems = [...cart.values()].filter(item => AB_SKU[item.id]).map(item => `${AB_SKU[item.id]}:${item.quantity}`);
-  if (AB_VERSION === 'B' && abItems.length) {
-    location.href = `${AB_CART_URL}?items=${encodeURIComponent(abItems.join(','))}`;
-    return;
-  }
   updatePaymentChoice();
   checkoutDialog.showModal();
   checkoutForm.elements.name.focus();
