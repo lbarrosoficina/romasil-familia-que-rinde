@@ -156,6 +156,29 @@ const primaryNav = document.querySelector('#primaryNav');
 const checkoutForm = document.querySelector('#checkoutForm');
 const formStatus = document.querySelector('#formStatus');
 const pageRegions = document.querySelectorAll('body > header, body > main, body > footer');
+// Prueba A/B: en B el carro está siempre a la vista (panel fijo en pantallas anchas, barra abajo en celular).
+const AB_FIXED_CART = AB_VERSION === 'B';
+const abWide = window.matchMedia('(min-width: 1100px)');
+const abPinned = () => AB_FIXED_CART && abWide.matches;
+const abBar = document.createElement('button');
+abBar.type = 'button';
+abBar.className = 'ab-cart-bar';
+abBar.hidden = true;
+abBar.addEventListener('click', () => document.querySelector('#checkoutButton')?.click());
+function abPin() {
+  if (!AB_FIXED_CART) return;
+  const on = abWide.matches;
+  drawer.inert = !on;
+  drawer.setAttribute('aria-hidden', String(!on));
+  drawer.setAttribute('role', on ? 'region' : 'dialog');
+  drawer.setAttribute('aria-modal', String(!on));
+}
+if (AB_FIXED_CART) {
+  document.documentElement.classList.add('ab-b');
+  document.body.append(abBar);
+  abPin();
+  abWide.addEventListener('change', abPin);
+}
 const WHATSAPP_NUMBER = '56962319733';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
@@ -190,6 +213,7 @@ function showToast(message) {
 }
 
 function openCart() {
+  if (abPinned()) { drawer.focus(); return; }
   closeNavigation();
   drawer.classList.add('open');
   drawer.inert = false;
@@ -210,6 +234,7 @@ function closeCart({ restoreFocus = true } = {}) {
   document.body.style.overflow = '';
   setPageRegionsInert(false);
   if (restoreFocus) openCartButton.focus();
+  abPin();
 }
 
 function closeNavigation({ restoreFocus = false } = {}) {
@@ -247,6 +272,10 @@ function renderCart() {
   const shipping = testOnly || total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   cartShipping.textContent = shipping === 0 ? 'Gratis' : money.format(shipping);
   cartGrandTotal.textContent = money.format(total + shipping);
+  if (AB_FIXED_CART) {
+    abBar.hidden = count === 0;
+    abBar.innerHTML = `<span>Tu pedido · ${count} ${count === 1 ? 'producto' : 'productos'} · <strong>${money.format(total + shipping)}</strong></span><span class="ab-cart-go">Ir al pago →</span>`;
+  }
   renderShippingProgress(total, testOnly);
   const hasKiloItems = items.some(item => item.pricedByKilo);
   cartShippingNote.hidden = !hasKiloItems;
