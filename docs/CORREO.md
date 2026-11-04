@@ -89,7 +89,7 @@ El checkout usa Resend como envío principal y FormSubmit como respaldo automát
 ```text
 Cliente elige transferencia o tarjeta y confirma el pedido
   → app.js envía el pedido a /api/pedido (función de Vercel, api/pedido.js)
-     → valida datos, medio de pago y precios; recalcula totales y el recargo de tarjeta con api/_catalogo.json
+     → valida datos, medio de pago y precios; recalcula totales con api/_catalogo.json
      → Resend: "Nuevo pedido …" a ventas@ (reply-to: cliente)
      → Resend: "Recibimos tu solicitud …" al cliente (reply-to: ventas@)
   → si la función no responde en 12 s o falla (error 5xx, sin clave, Resend caído):

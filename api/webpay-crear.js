@@ -13,7 +13,8 @@ function orderNumber(date = new Date()) {
   }).formatToParts(date).map(part => [part.type, part.value]));
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const random = Array.from({ length: 3 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
-  return `R${parts.month}${parts.day}-${parts.hour}${parts.minute}-${random}`;
+  const pad = key => String(parts[key]).padStart(2, '0');
+  return `R${pad('month')}${pad('day')}-${pad('hour')}${pad('minute')}-${random}`;
 }
 
 async function handler(req, res) {

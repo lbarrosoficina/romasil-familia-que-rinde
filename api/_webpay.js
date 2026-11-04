@@ -3,7 +3,7 @@ const CATALOG = require('./_catalogo.json');
 
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
-const CARD_SURCHARGE_RATE = 0.03;
+const CARD_SURCHARGE_RATE = 0;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 
