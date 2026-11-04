@@ -69,7 +69,8 @@ function numeroPedido(fecha = new Date()) {
   const partes = Object.fromEntries(new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
     .formatToParts(fecha).map(p => [p.type, p.value]));
   const azar = Array.from({ length: 3 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  return `R${partes.month}${partes.day}-${partes.hour}${partes.minute}-${azar}`;
+  const n = k => String(partes[k]).padStart(2, '0');
+  return `R${n('month')}${n('day')}-${n('hour')}${n('minute')}-${azar}`;
 }
 
 function fechaChile(fecha = new Date()) {
