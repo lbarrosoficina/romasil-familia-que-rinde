@@ -182,7 +182,7 @@ const ORDER_API_TIMEOUT_MS = 12000;
 const ORDER_FORM_ENDPOINT = 'https://formsubmit.co/ajax/ventas@congeladosromasil.cl';
 const WEBPAY_API_ENDPOINT = '/api/webpay-crear';
 const WEBPAY_API_TIMEOUT_MS = 12000;
-const CARD_SURCHARGE_RATE = 0.03;
+const CARD_SURCHARGE_RATE = 0;
 const PAYMENT_RECEIPT_EMAIL = 'ventas@congeladosromasil.cl';
 const AVAILABILITY_API_ENDPOINT = '/api/disponibilidad';
 const productAvailability = new Map();
@@ -522,7 +522,7 @@ function updatePaymentChoice() {
   transferPanel.hidden = paymentMethod !== 'transfer';
   cardPanel.hidden = paymentMethod !== 'card';
   totalPanel.hidden = !paymentMethod;
-  surchargeRow.hidden = paymentMethod !== 'card';
+  surchargeRow.hidden = !totals.surcharge;
   document.querySelector('#checkoutBaseTotal').textContent = money.format(totals.baseTotal);
   document.querySelector('#cardSurcharge').textContent = money.format(totals.surcharge);
   document.querySelector('#checkoutGrandTotal').textContent = money.format(totals.total);

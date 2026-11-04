@@ -26,11 +26,11 @@ test('aplica despacho gratis y consolida líneas repetidas', () => {
   assert.equal(order.shipping, 0);
 });
 
-test('calcula en el servidor el recargo de 3% para tarjeta', () => {
+test('tarjeta sin recargo', () => {
   const order = calculateOrder([{ id: 'filetillo-pollo', quantity: 1 }], { cardSurcharge: true });
   assert.equal(order.baseTotal, 9200);
-  assert.equal(order.surcharge, 276);
-  assert.equal(order.total, 9476);
+  assert.equal(order.surcharge, 0);
+  assert.equal(order.total, 9200);
 });
 
 test('el producto test cobra exactamente $50 sin despacho ni recargo', () => {
@@ -57,8 +57,8 @@ test('el pedido distingue transferencia y tarjeta al calcular el total', () => {
   const card = validarPedido({ ...base, paymentMethod: 'card' }).pedido;
   assert.equal(transfer.total, 9200);
   assert.equal(transfer.surcharge, 0);
-  assert.equal(card.total, 9476);
-  assert.equal(card.surcharge, 276);
+  assert.equal(card.total, 9200);
+  assert.equal(card.surcharge, 0);
 });
 
 test('descarta productos y cantidades manipuladas', () => {
@@ -122,7 +122,7 @@ test('el endpoint crea la transacción con el monto del servidor y retorno propi
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.ok, true);
   assert.match(response.body.orderNumber, /^R\d{4}-\d{4}-[A-HJ-NP-Z2-9]{3}$/);
-  assert.equal(sentRequest.body.amount, 15347);
+  assert.equal(sentRequest.body.amount, 14900);
   assert.equal(sentRequest.body.return_url, 'https://preview.example.cl/api/webpay-retorno');
   assert.equal(new URL(sentRequest.url).hostname, 'webpay3gint.transbank.cl');
 });

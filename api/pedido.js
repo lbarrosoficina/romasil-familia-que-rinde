@@ -13,7 +13,7 @@ const WHATSAPP = '56962319733';
 const SITE = 'https://www.congeladosromasil.cl';
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 50000;
-const CARD_SURCHARGE_RATE = 0.03;
+const CARD_SURCHARGE_RATE = 0;
 const MAX_QUANTITY = 99;
 const MAX_LINES = 30;
 const COMMUNES = ['Providencia', 'Ñuñoa', 'Las Condes'];
@@ -144,7 +144,7 @@ ${tablaProductos(p)}
 <h2 style="margin:0 0 8px;font-size:16px;color:${C.navy};">¿Qué sigue?</h2>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
 ${p.paymentMethod === 'card'
-    ? paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank. El total incluye el recargo informado del 3%.')
+    ? paso(1, 'Pagas con Webpay', 'Al enviar tus datos te dirigimos al sitio seguro de Transbank.')
     : paso(1, 'Realiza la transferencia', 'Transfiere a la cuenta indicada en la web y envía el comprobante a ventas@congeladosromasil.cl o por WhatsApp.')}
 ${paso(2, 'Coordinamos la entrega', p.paymentMethod === 'card' ? 'Cuando el pago sea autorizado, te contactaremos para confirmar la fecha y franja de despacho.' : 'Cuando confirmemos la transferencia, te contactaremos para confirmar la fecha y franja de despacho.')}
 ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
@@ -154,7 +154,7 @@ ${paso(3, 'Recibes en frío', 'Tu pedido llega congelado en 24 a 48 horas.')}
 <p style="margin:0 0 20px;"><a href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, tengo una consulta sobre mi pedido ' + numero)}" style="display:inline-block;background:#15803D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 20px;border-radius:999px;">Escribir por WhatsApp</a></p>
 <p style="margin:0;font-size:14px;color:${C.ink};">Un abrazo,<br><strong>Equipo Congelados Romasil</strong></p>`);
   const paymentStep = p.paymentMethod === 'card'
-    ? '1. Pagas con Webpay en el sitio seguro de Transbank. El total incluye el recargo informado del 3%.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.'
+    ? '1. Pagas con Webpay en el sitio seguro de Transbank.\n2. Cuando el pago sea autorizado, coordinamos la entrega contigo.'
     : '1. Realiza la transferencia a la cuenta indicada en la web.\n2. Envía el comprobante a ventas@congeladosromasil.cl o por WhatsApp y coordinaremos la entrega cuando lo validemos.';
   const text = `¡Gracias por tu pedido, ${nombre}!\n\nRecibimos tu solicitud ${numero} y ya la estamos revisando.\n\n` + textoProductos(p) +
     `\nDespacho a: ${c.addressLine1}${c.addressLine2 ? ', ' + c.addressLine2 : ''}, ${c.commune}\nMedio de pago: ${p.paymentMethod === 'card' ? 'Tarjeta mediante Webpay' : 'Transferencia bancaria'}\n\n¿Qué sigue?\n${paymentStep}\n3. Recibes en frío: tu pedido llega congelado en 24 a 48 horas.\n\nEste correo confirma el registro del pedido, no el resultado del pago.\n\n¿Dudas? Responde este correo o escríbenos por WhatsApp al +56 9 6231 9733 (lunes a domingo, 08:00 a 20:00).\n\nEquipo Congelados Romasil`;

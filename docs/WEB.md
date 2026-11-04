@@ -113,7 +113,7 @@ Si no se puede reservar stock o contactar la intranet, el checkout se detiene an
 - La portada y el catálogo cargan sin errores.
 - Las imágenes y páginas de producto responden correctamente.
 - El carrito permite agregar, ajustar y quitar productos.
-- El checkout permite elegir transferencia o tarjeta. La transferencia muestra la cuenta corriente y los canales para enviar el comprobante; la tarjeta suma un 3 % y abre Webpay.
+- El checkout permite elegir transferencia o tarjeta. La transferencia muestra la cuenta corriente y los canales para enviar el comprobante; la tarjeta abre Webpay, sin recargo.
 - El checkout registra el pedido por correo y conserva el carrito si el pago no se completa.
 - El pedido aparece una sola vez como preventa en la intranet; Webpay autorizado lo convierte en venta pagada.
 - El retorno de Webpay confirma en el servidor el estado, monto, orden y código de autorización.
